@@ -18,7 +18,7 @@ public class Account implements Serializable {
     private final String password;
     private final String ip;
     private final List<String> friends;
-    private final List<Integer> mutes;
+    private final List<String> mutes;
     private final long creationDate;
 
 

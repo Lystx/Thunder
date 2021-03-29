@@ -42,7 +42,7 @@ public class FriendHandler {
     @PacketHandler
     public void handle(PacketInFriendMute packet) {
         Account account = packet.getAccount();
-        account.getMutes().add(packet.getFriend().getId());
+        account.getMutes().add(packet.getFriend().getId() + "");
         MessageAPI.getInstance().getAccountManager().update(String.valueOf(account.getId()), account);
         MessageAPI.getInstance().getNettyConnection().sendPacket(new PacketOutUpdateAccount(account));
 
@@ -51,7 +51,7 @@ public class FriendHandler {
     @PacketHandler
     public void handle(PacketInFriendMuteRemove packet) {
         Account account = packet.getAccount();
-        account.getMutes().remove(packet.getFriend().getId());
+        account.getMutes().remove(String.valueOf(packet.getFriend().getId()));
         MessageAPI.getInstance().getAccountManager().update(String.valueOf(account.getId()), account);
         MessageAPI.getInstance().getNettyConnection().sendPacket(new PacketOutUpdateAccount(account));
 

@@ -84,7 +84,7 @@ public class FriendsCommand extends Command {
                     console.sendMessage("ERROR", "§cThere is no account registered with the name §e" + player + "§c!");
                     return;
                 }
-                if (account.getMutes().contains(playerAccount.getId())) {
+                if (account.getMutes().contains(playerAccount.getId() + "")) {
                     console.sendMessage("ERROR", "§cThere player §e" + player + " §cis already muted for you!");
                     return;
                 }
@@ -97,7 +97,7 @@ public class FriendsCommand extends Command {
                     console.sendMessage("ERROR", "§cThere is no account registered with the name §e" + player + "§c!");
                     return;
                 }
-                if (!account.getMutes().contains(playerAccount.getId())) {
+                if (!account.getMutes().contains(playerAccount.getId() + "")) {
                     console.sendMessage("ERROR", "§cThere player §e" + player + " §cis not muted for you!");
                     return;
                 }

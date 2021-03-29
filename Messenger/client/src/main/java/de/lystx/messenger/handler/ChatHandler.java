@@ -27,7 +27,7 @@ public class ChatHandler {
         }
         try {
             Account sender = chatMessage.getSender();
-            if (!MessageAPI.getInstance().getAccount().getMutes().contains(sender.getId())) {
+            if (!MessageAPI.getInstance().getAccount().getMutes().contains(sender.getId() + "")) {
                 if (sender.getName().equalsIgnoreCase(Client.getInstance().getAccount().getName())) {
                     return;
                 }
