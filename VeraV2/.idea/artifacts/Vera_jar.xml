@@ -1,0 +1,20 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Vera.jar">
+    <output-path>E:/Localhost/Other</output-path>
+    <root id="archive" name="VeraV2.jar">
+      <element id="module-output" name="VeraV2" />
+      <element id="library" level="project" name="vson-1.0-final" />
+      <element id="library" level="project" name="Maven: io.netty:netty-codec:4.1.8.Final" />
+      <element id="library" level="project" name="Maven: io.netty:netty-transport:4.1.8.Final" />
+      <element id="library" level="project" name="Maven: io.netty:netty-resolver:4.1.8.Final" />
+      <element id="library" level="project" name="Maven: io.netty:netty-transport-native-epoll:linux-x86_64:4.1.8.Final" />
+      <element id="library" level="project" name="Maven: io.netty:netty-common:4.1.8.Final" />
+      <element id="library" level="project" name="Maven: io.netty:netty-buffer:4.1.8.Final" />
+      <element id="library" level="project" name="Maven: org.fusesource.jansi:jansi:1.13" />
+      <element id="library" level="project" name="Maven: org.jline:jline-reader:3.3.0" />
+      <element id="library" level="project" name="Maven: org.jline:jline-terminal:3.3.0" />
+      <element id="library" level="project" name="Maven: com.google.guava:guava:11.0.2" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../dependencies/javassist-3.12.1.GA.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="server:jar">
+    <output-path>E:/Localhost/Messenger/server</output-path>
+    <root id="archive" name="server.jar">
+      <element id="module-output" name="server" />
+      <element id="module-output" name="library" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.16.10/lombok-1.16.10.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/io/netty/netty-all/4.1.44.Final/netty-all-4.1.44.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/ingot-terminal-0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/vson-1.0-final.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

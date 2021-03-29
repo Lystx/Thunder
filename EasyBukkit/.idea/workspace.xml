@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="testAddon" />
+    </artifacts-to-build>
+  </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d9e0a50b-61e3-43c2-86c0-18e80df09cff" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/artifacts/testAddon.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/artifacts/unnamed.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/discord.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/spigot.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/vson_1_0_final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/EasyBukkit.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/EasyBukkit.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/elements/Consumer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/elements/Convertable.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/elements/Datable.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/internal/BetterBukkit.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/internal/commands/AddonsCommand.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/internal/events/PlayerChatEvent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/internal/events/PlayerConnectionStateChangeEvent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/internal/events/PlayerMoveEvent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/internal/listener/BetterBukkitPlayerListenerCommand.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/internal/listener/BetterBukkitPlayerListenerJoin.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/internal/listener/BetterBukkitPlayerListenerLogin.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/internal/listener/BetterBukkitPlayerListenerMove.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/internal/listener/BetterBukkitPlayerListenerQuit.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/internal/utils/BetterClassLoader.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/addon/Addon.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/addon/AddonInfo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/addon/AddonProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/command/Command.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/command/CommandInfo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/command/CommandProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/command/TabCompletable.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/event/Event.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/event/EventListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/event/EventMethod.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/event/EventProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/event/HandleEvent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/event/Priority.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/item/Item.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/item/Substance.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/player/CommandSender.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/player/Interface.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/player/Player.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/player/PlayerInventory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/scheduler/Schedule.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/scheduler/Scheduler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/scheduler/Task.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/util/BlockUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/util/ItemUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/util/PlayerInventoryUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/util/PlayerUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/util/PositionUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/util/Util.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/util/WorldUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/world/Block.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/world/Position.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/world/World.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/src/main/java/de/lystx/test/TestAddon.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/src/main/java/de/lystx/test/TestCommand.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/src/main/java/de/lystx/test/TestListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/src/main/resources/config.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Patheria/core/core.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Invictus/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Invictus/.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Invictus/.idea/discord.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Invictus/.idea/jarRepositories.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Invictus/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Invictus/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Invictus/Invictus.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Invictus/src/main/java/tech/invictus/Invictus.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Enum" />
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="ProjectId" id="1plP1KHtfNcPpMZl02vJM4oEkoK" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/java/io/betterbukkit/provider/scheduler" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.16796875" />
+    <property name="project.structure.side.proportion" value="0.23889557" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Games\IntelliJ\workspace\EasyBukkit\src\main\java\io\betterbukkit\provider\scheduler" />
+      <recent name="D:\Games\IntelliJ\workspace\EasyBukkit\src\main\java\io\betterbukkit\provider\command" />
+      <recent name="D:\Games\IntelliJ\workspace\EasyBukkit\src\main\java\io\betterbukkit\provider\event" />
+      <recent name="D:\Games\IntelliJ\workspace\EasyBukkit\src\main\resources" />
+      <recent name="D:\Games\IntelliJ\workspace\EasyBukkit\src\main\java" />
+    </key>
+    <key name="MoveInnerDialog.RECENTS_KEY">
+      <recent name="io.betterbukkit.provider.item" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="io.betterbukkit.elements" />
+      <recent name="io.betterbukkit.provider.item" />
+      <recent name="io.betterbukkit.internal.events" />
+      <recent name="io.betterbukkit.internal.listener" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d9e0a50b-61e3-43c2-86c0-18e80df09cff" name="Default Changelist" comment="" />
+      <created>1615754487898</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1615754487898</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+</project>

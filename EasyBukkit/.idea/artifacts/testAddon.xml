@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="testAddon">
+    <output-path>E:/Localhost/Spigot/addons</output-path>
+    <root id="archive" name="unnamed.jar">
+      <element id="module-output" name="test" />
+      <element id="file-copy" path="$PROJECT_DIR$/test/src/main/resources/config.json" />
+    </root>
+  </artifact>
+</component>

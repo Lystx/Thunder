@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="unnamed">
+    <output-path>E:/Localhost/Spigot/plugins</output-path>
+    <root id="archive" name="unnamed.jar">
+      <element id="module-output" name="EasyBukkit" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../dependencies/vson-1.0-final.jar" path-in-jar="/" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/plugin.yml" />
+    </root>
+  </artifact>
+</component>

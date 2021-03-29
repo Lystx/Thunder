@@ -1,0 +1,5 @@
+main: io.betterbukkit.internal.BetterBukkit
+author: Lystx
+version: 1.0
+commands:
+name: BetterBukkit
