@@ -1,7 +1,0 @@
-{
-  "name": "TestAddon",
-  "author": "Lystx",
-  "version": "1.0",
-  "main": "de.lystx.test.TestAddon",
-  "commands": []
-}
