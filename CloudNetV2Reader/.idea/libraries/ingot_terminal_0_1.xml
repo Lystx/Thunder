@@ -1,8 +1,7 @@
 <component name="libraryTable">
   <library name="ingot-terminal-0.1">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../Messenger/libs/ingot-terminal-0.1.jar!/" />
-      <root url="jar://$PROJECT_DIR$/../Messenger/libs/vson-1.0-final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../dependencies/ingot-terminal-0.1.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

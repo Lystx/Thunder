@@ -1,16 +1,24 @@
-package org.gravel.utils;
+package org.gravel.elements.gui;
 
 
-import org.gravel.Gui;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.gravel.library.GravelAPI;
+import org.gravel.library.manager.user.GravelUser;
+import org.gravel.library.manager.user.UserStatus;
 
 import java.lang.management.ManagementFactory;
 import java.text.NumberFormat;
 import java.util.concurrent.TimeUnit;
 
 
+@Getter @AllArgsConstructor
 public class SystemInfo {
 
-    public static void printInfo() {
+
+    private final Gui gui;
+
+    public void printInfo() {
         while (true) {
             Runtime runtime = Runtime.getRuntime();
 
@@ -28,21 +36,31 @@ public class SystemInfo {
             sb.append("\n");
 
             try {
-                @SuppressWarnings("restriction")
                 com.sun.management.OperatingSystemMXBean operatingSystemMXBean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-                @SuppressWarnings("restriction")
                 double processLoad = operatingSystemMXBean.getProcessCpuLoad();
-                @SuppressWarnings("restriction")
                 double systemLoad = operatingSystemMXBean.getSystemCpuLoad();
                 int processors = runtime.availableProcessors();
 
                 sb.append("Available Processors: " + processors + "\n");
                 sb.append("Process CPU Load: " + Math.round(processLoad * 100) + "%\n");
                 sb.append("System CPU Load: " + Math.round(systemLoad * 100) + "%\n");
-                Gui.sysText.setText(sb.toString());
+                this.gui.getSysText().setText(sb.toString());
+
+                StringBuilder stringBuilder = new StringBuilder();
+                for (GravelUser user : GravelAPI.getInstance().getUserManager().getUsers()) {
+                    if (user.getStatus().equals(UserStatus.OFFLINE)) {
+                        continue;
+                    }
+
+                    stringBuilder.append("@" + user.getAccount().getName()).append(" (" + user.getStatus() + ") ").append("[" + user.getFriends().size() + " Friends]").append("\n");
+                }
+                this.gui.getClientText().setText(stringBuilder.toString());
             } catch (Exception ignore) {}
 
-            try {TimeUnit.MILLISECONDS.sleep(1000);} catch (InterruptedException e) {}
+            try {
+                TimeUnit.MILLISECONDS.sleep(1000);
+            } catch (InterruptedException ignored) {
+            }
         }
     }
 

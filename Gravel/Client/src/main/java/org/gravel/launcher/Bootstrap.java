@@ -1,6 +1,6 @@
 package org.gravel.launcher;
 
-import org.gravel.Gui;
+import org.gravel.GravelClient;
 
 public class Bootstrap {
 
@@ -22,8 +22,7 @@ public class Bootstrap {
             }
         }
         try {
-            Gui.start();
-            //new ClientGui(host, port, nickname);
+            new GravelClient(host, port);
         } catch (NullPointerException e) {
             System.out.println("[Client] Some of the arguments was null or not found!");
         }

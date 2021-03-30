@@ -1,10 +1,11 @@
 package org.gravel.launcher;
 
-import java.io.IOException;
+import org.gravel.GravelServer;
+
 
 public class Bootstrap {
 
     public static void main(String[] args) {
-        //new Server(1758).run();
+        new GravelServer();
     }
 }
