@@ -17,6 +17,6 @@ public class ChatMessage implements Serializable {
 
 
     public String format() {
-        return sender.getAccount().getName() + " > " + content + " [" + new SimpleDateFormat("dd.MM.yyyy hh:mm:ss").format(new Date(this.date)) + "]";
+        return "[" + new SimpleDateFormat("dd.MM.yyyy hh:mm:ss").format(new Date(this.date)) + "] " + sender.getAccount().getName() + " > " + content;
     }
 }

@@ -1,7 +1,7 @@
 package org.gravel.library.manager.networking.connection.adapter;
 
+import io.thunder.manager.packet.ThunderPacket;
 import lombok.Getter;
-import org.gravel.library.manager.networking.connection.packet.Packet;
 import org.gravel.library.manager.networking.elements.ObjectMethod;
 import org.gravel.library.manager.networking.packet.PacketHandler;
 
@@ -48,7 +48,7 @@ public class PacketAdapter {
         this.registeredClasses.remove(adapterHandler);
     }
 
-    public void handelAdapterHandler(Packet packet) {
+    public void handelAdapterHandler(ThunderPacket packet) {
         try {
             this.registeredClasses.forEach((object, methodList) -> {
                 for (ObjectMethod<PacketHandler> em : methodList) {

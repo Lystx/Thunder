@@ -1,5 +1,6 @@
 package org.gravel.manager;
 
+import org.gravel.library.manager.account.Account;
 import org.gravel.library.manager.chatting.Chat;
 import org.gravel.library.manager.chatting.ChatManager;
 import org.gravel.library.manager.user.GravelUser;
@@ -41,8 +42,8 @@ public class GravelChatManager extends Appender<Chat> implements ChatManager {
     public List<Chat> getChats(GravelUser gravelUser) {
         List<Chat> chats = new LinkedList<>();
         for (Chat chat : this.getChats()) {
-            for (GravelUser user : chat.getUsers()) {
-                if (user.getAccount().getName().equalsIgnoreCase(gravelUser.getAccount().getName())) {
+            for (Account user : chat.getUsers()) {
+                if (user.getName().equalsIgnoreCase(gravelUser.getAccount().getName())) {
                     chats.add(chat);
                 }
             }

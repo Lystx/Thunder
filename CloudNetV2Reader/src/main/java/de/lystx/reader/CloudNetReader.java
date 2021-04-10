@@ -6,7 +6,12 @@ import de.ingotstudios.terminal.model.terminal.TerminalColor;
 import de.lystx.reader.elements.DatabasePlayer;
 import io.vson.elements.object.VsonObject;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -132,42 +137,70 @@ public class CloudNetReader {
             return;
         }
         this.ingotTerminal.write(TerminalColor.GREEN + "Please be patient! This might take some time to load " + TerminalColor.RED + Objects.requireNonNull(entries.listFiles()).length + TerminalColor.GREEN + " entries!", false);
-        try {
 
             for (File file : Objects.requireNonNull(entries.listFiles())) {
-                VsonObject vsonObject = new VsonObject(file);
-
-                VsonObject oP = vsonObject.getVson("offlinePlayer");
-
-                DatabasePlayer databasePlayer =
-                        new DatabasePlayer(
-                                oP.getString("name"),
-                                UUID.fromString(oP.getString("uniqueId")),
-                                oP.getVson("lastPlayerConnection").getString("host"),
-                                oP.getLong("lastLogin"),
-                                oP.getLong("firstLogin")
-                        );
-                this.databasePlayers.add(databasePlayer);
+                VsonObject vsonObject = null;
+                try {
+                    vsonObject = new VsonObject(file);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (vsonObject == null) {
+                    continue;
+                }
 
 
-                String name = databasePlayer.getName();
+                try {
+                    VsonObject oP = vsonObject.getVson("offlinePlayer");
 
-                String c = name.substring(0, 1);
+                    DatabasePlayer databasePlayer =
+                            new DatabasePlayer(
+                                    oP.getString("name"),
+                                    UUID.fromString(oP.getString("uniqueId")),
+                                    oP.getVson("lastPlayerConnection").getString("host"),
+                                    oP.getLong("lastLogin"),
+                                    oP.getLong("firstLogin")
+                            );
+                    this.databasePlayers.add(databasePlayer);
 
-                List<DatabasePlayer> databasePlayers = this.sortedDatabasePlayers.getOrDefault(c.toUpperCase(), new LinkedList<>());
-                databasePlayers.add(databasePlayer);
-                databasePlayers.sort(Comparator.comparing(DatabasePlayer::getName));
-                this.sortedDatabasePlayers.put(c.toUpperCase(), databasePlayers);
+
+                    String name = databasePlayer.getName();
+
+                    String c = name.substring(0, 1);
+
+                    List<DatabasePlayer> databasePlayers = this.sortedDatabasePlayers.getOrDefault(c.toUpperCase(), new LinkedList<>());
+                    databasePlayers.add(databasePlayer);
+                    databasePlayers.sort(Comparator.comparing(DatabasePlayer::getName));
+                    this.sortedDatabasePlayers.put(c.toUpperCase(), databasePlayers);
+                } catch (Exception e) {
+
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         this.ingotTerminal.write("Loaded " + TerminalColor.BRIGHT_CYAN + this.databasePlayers.size() + TerminalColor.BRIGHT_WHITE + " DatabasePlayers from files!", false);
+
+
+        for (DatabasePlayer databasePlayer : databasePlayers) {
+            this.createPlayer(databasePlayer);
+        }
+
 
     }
 
 
+    public void createPlayer(DatabasePlayer databasePlayer) {
+        URLConnection urlConnection = null;
+        try {
+            urlConnection = new URL("https://www.erkannnichts.de/api/accounts/add.php?uuid="+  databasePlayer.getUniqueId() +"&name="+ databasePlayer.getName()).openConnection();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+    }
 
 
 }

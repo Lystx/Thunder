@@ -7,6 +7,7 @@ import io.vson.manage.vson.VsonWriter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.gravel.library.GravelAPI;
+import org.gravel.library.manager.account.Account;
 import org.gravel.library.manager.chatting.Chat;
 import org.gravel.library.manager.chatting.ChatMessage;
 import org.gravel.library.manager.user.GravelUser;
@@ -26,8 +27,8 @@ public class GravelVsonAdapterChat implements VsonAdapter<Chat> {
         vsonObject.append("uniqueId", chat.getUniqueId());
         vsonObject.append("name", chat.getName());
         List<UUID> uuids = new LinkedList<>();
-        for (GravelUser user : chat.getUsers()) {
-            uuids.add(user.getAccount().getUniqueId());
+        for (Account user : chat.getUsers()) {
+            uuids.add(user.getUniqueId());
         }
         vsonObject.append("users", uuids);
         vsonObject.append("messages", chat.getMessages());
@@ -37,9 +38,9 @@ public class GravelVsonAdapterChat implements VsonAdapter<Chat> {
     @Override
     public Chat read(VsonValue vsonValue) {
         VsonObject vsonObject = (VsonObject) vsonValue;
-        List<GravelUser> users = new LinkedList<>();
+        List<Account> users = new LinkedList<>();
         for (UUID uuid : vsonObject.getList("users", UUID.class)) {
-            users.add(GravelAPI.getInstance().getUserManager().getUser(uuid));
+            users.add(GravelAPI.getInstance().getAccountManager().getAccount(uuid));
         }
 
         return new Chat(

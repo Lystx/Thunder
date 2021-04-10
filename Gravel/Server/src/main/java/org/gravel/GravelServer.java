@@ -2,11 +2,11 @@ package org.gravel;
 
 import lombok.Getter;
 import org.gravel.handler.PacketHandlerChat;
+import org.gravel.handler.PacketHandlerPlayer;
 import org.gravel.handler.PacketHandlerResult;
 import org.gravel.library.GravelAPI;
-import org.gravel.library.manager.chatting.Chat;
 import org.gravel.library.manager.networking.netty.ConnectionServer;
-import org.gravel.library.manager.networking.netty.NettyConnection;
+import org.gravel.library.manager.networking.netty.GravelConnection;
 import org.gravel.library.manager.user.GravelUser;
 import org.gravel.library.manager.user.UserStatus;
 import org.gravel.manager.FileManager;
@@ -14,13 +14,11 @@ import org.gravel.manager.GravelAccountManager;
 import org.gravel.manager.GravelChatManager;
 import org.gravel.manager.GravelUserManager;
 
-import java.util.*;
-
 
 @Getter
 public class GravelServer {
 
-    private final NettyConnection nettyServer;
+    private final GravelConnection nettyServer;
     private final FileManager fileManager;
 
     public GravelServer() {
@@ -45,6 +43,7 @@ public class GravelServer {
 
         this.nettyServer.getPacketAdapter().registerAdapter(new PacketHandlerResult(this));
         this.nettyServer.getPacketAdapter().registerAdapter(new PacketHandlerChat());
+        this.nettyServer.getPacketAdapter().registerAdapter(new PacketHandlerPlayer());
 
         GravelAPI.init(this.nettyServer);
 
@@ -61,7 +60,6 @@ public class GravelServer {
         for (GravelUser user : GravelAPI.getInstance().getUserManager().getUsers()) {
             user.setStatus(UserStatus.OFFLINE);
             GravelAPI.getInstance().getUserManager().update(user);
-
         }
     }
 }

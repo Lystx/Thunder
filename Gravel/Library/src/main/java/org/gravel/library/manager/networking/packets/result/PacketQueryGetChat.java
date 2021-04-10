@@ -2,6 +2,7 @@ package org.gravel.library.manager.networking.packets.result;
 
 import lombok.Getter;
 import org.gravel.library.GravelAPI;
+import org.gravel.library.manager.account.Account;
 import org.gravel.library.manager.chatting.Chat;
 import org.gravel.library.manager.networking.packets.PacketInBoundHandler;
 import org.gravel.library.manager.user.GravelUser;
@@ -14,11 +15,11 @@ import java.util.UUID;
 @Getter
 public class PacketQueryGetChat extends PacketInBoundHandler<Chat> {
 
-    private final GravelUser[] gravelUser;
+    private final Account[] gravelUser;
     private final String name;
 
 
-    public PacketQueryGetChat(String name, GravelUser... gravelUser) {
+    public PacketQueryGetChat(String name, Account... gravelUser) {
         this.gravelUser = gravelUser;
         this.name = name;
     }
@@ -30,7 +31,7 @@ public class PacketQueryGetChat extends PacketInBoundHandler<Chat> {
 
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < this.gravelUser.length; i++) {
-            stringBuilder.append(this.gravelUser[i].getAccount().getName());
+            stringBuilder.append(this.gravelUser[i].getName());
             if (i != this.gravelUser.length -1) {
                 stringBuilder.append(" & ");
             }

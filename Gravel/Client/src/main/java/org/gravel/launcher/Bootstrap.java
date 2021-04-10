@@ -24,6 +24,7 @@ public class Bootstrap {
         try {
             new GravelClient(host, port);
         } catch (NullPointerException e) {
+            e.printStackTrace();
             System.out.println("[Client] Some of the arguments was null or not found!");
         }
     }

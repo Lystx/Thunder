@@ -5,6 +5,7 @@ import org.gravel.library.manager.chatting.Chat;
 import org.gravel.library.manager.networking.packet.PacketHandler;
 import org.gravel.library.manager.networking.packets.in.PacketInSendMessage;
 import org.gravel.library.manager.networking.packets.out.PacketOutSendMessage;
+import org.gravel.library.manager.networking.packets.out.PacketTyping;
 
 public class PacketHandlerChat {
 
@@ -21,5 +22,10 @@ public class PacketHandlerChat {
             }
         }
 
+    }
+
+    @PacketHandler
+    public void handle(PacketTyping packet) {
+        GravelAPI.getInstance().sendPacket(packet);
     }
 }

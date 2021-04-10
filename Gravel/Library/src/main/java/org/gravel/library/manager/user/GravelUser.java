@@ -14,9 +14,46 @@ public class GravelUser implements Serializable {
 
     private final Account account;
     private final Map<String, Object> settings;
-    private final List<GravelUser> friends;
-    private final List<GravelUser> muted;
-    private final List<GravelUser> requests;
+    private final List<Account> friends;
+    private final List<Account> muted;
+    private final List<Account> requests;
     private UserStatus status;
+
+
+    public boolean isFriends(GravelUser user) {
+        for (Account gravelUser : this.friends) {
+            if (gravelUser.getName().equals(user.getAccount().getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isMuted(GravelUser user) {
+        for (Account gravelUser : this.muted) {
+            if (gravelUser.getName().equals(user.getAccount().getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasRequest(GravelUser user) {
+        for (Account gravelUser : this.requests) {
+            if (gravelUser.getName().equals(user.getAccount().getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasMuted(GravelUser user) {
+        for (Account gravelUser : this.muted) {
+            if (gravelUser.getName().equals(user.getAccount().getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

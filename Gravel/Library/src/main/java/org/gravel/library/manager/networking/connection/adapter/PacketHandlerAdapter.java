@@ -1,9 +1,9 @@
 package org.gravel.library.manager.networking.connection.adapter;
 
 
-import org.gravel.library.manager.networking.connection.packet.Packet;
+import io.thunder.manager.packet.ThunderPacket;
 
 public abstract class PacketHandlerAdapter {
 
-    public abstract void handle(Packet packet);
+    public abstract void handle(ThunderPacket packet);
 }

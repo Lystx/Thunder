@@ -25,6 +25,12 @@ public class FileManager {
 
         this.config = new VsonObject(new File(this.directory, "config.vson"), VsonSettings.CREATE_FILE_IF_NOT_EXIST, VsonSettings.OVERRITE_VALUES);
         this.config.getBoolean("registered", false);
+        this.config.getVson("stayLoggedIn",
+                    new VsonObject()
+                        .append("enabled", false)
+                        .append("username", "noUser")
+                        .append("password", "hashedPw")
+                );
         this.config.save();
     }
 }

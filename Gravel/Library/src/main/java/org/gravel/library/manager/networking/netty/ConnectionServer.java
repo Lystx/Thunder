@@ -1,83 +1,52 @@
 package org.gravel.library.manager.networking.netty;
 
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
-import io.netty.channel.epoll.Epoll;
-import io.netty.channel.epoll.EpollEventLoopGroup;
-import io.netty.channel.epoll.EpollServerSocketChannel;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.handler.codec.LengthFieldPrepender;
-import io.netty.handler.codec.serialization.ClassResolvers;
-import io.netty.handler.codec.serialization.ObjectDecoder;
-import io.netty.handler.codec.serialization.ObjectEncoder;
-import org.gravel.library.manager.networking.connection.packet.Packet;
+import io.thunder.Thunder;
+import io.thunder.connection.ThunderClient;
+import io.thunder.connection.ThunderListener;
+import io.thunder.connection.ThunderServer;
+import io.thunder.manager.packet.ThunderPacket;
 import org.gravel.library.manager.networking.connection.packet.PacketState;
-import org.gravel.library.manager.networking.packets.out.PacketOutClientConnected;
 
-import java.net.InetSocketAddress;
+import java.io.IOException;
 import java.util.function.Consumer;
 
-public class ConnectionServer extends NettyConnection {
+public class ConnectionServer extends GravelConnection {
+
+    private final ThunderServer thunderServer;
 
     public ConnectionServer(String host, int port) {
         super(host, port);
+
+        this.thunderServer = Thunder.createServer();
+        this.thunderServer.addHandler(new ThunderListener() {
+            @Override
+            public void handleConnect(ThunderClient thunderClient) {
+            }
+
+            @Override
+            public void handleDisconnect(ThunderClient thunderClient) {
+
+            }
+
+            @Override
+            public void handlePacket(ThunderPacket thunderPacket, ThunderClient thunderClient) throws IOException {
+                packetAdapter.handelAdapterHandler(thunderPacket);
+            }
+        });
     }
 
     @Override
     public void run() {
-        EventLoopGroup workerGroup = Epoll.isAvailable() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
-        EventLoopGroup bossGroup = Epoll.isAvailable() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
-        ServerBootstrap serverBootstrap = new ServerBootstrap();
-        serverBootstrap.group(workerGroup, bossGroup);
-        serverBootstrap.channel(Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class);
-        serverBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
-            public void initChannel(SocketChannel socketChannel) throws Exception {
-                ChannelPipeline channelPipeline = socketChannel.pipeline();
-                channelPipeline.addLast(new LengthFieldBasedFrameDecoder(2147483647, 0, 2, 0, 2));
-                channelPipeline.addLast(new LengthFieldPrepender(2));
-                channelPipeline.addLast(new ObjectDecoder(ClassResolvers.weakCachingConcurrentResolver(getClass().getClassLoader())));
-                channelPipeline.addLast(new ObjectEncoder());
-                channelPipeline.addLast(new SimpleChannelInboundHandler<Packet>() {
-
-                    public void channelRead0(ChannelHandlerContext channelHandlerContext, Packet packet) throws Exception {
-                        packetAdapter.handelAdapterHandler(packet);
-                    }
-
-                    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-                        if (cause instanceof java.io.IOException) {
-                            return;
-                        }
-                        cause.printStackTrace();
-                    }
-                });
-                InetSocketAddress inetSocketAddress = socketChannel.remoteAddress();
-                registeredChannels.add(socketChannel);
-                sendPacket(new PacketOutClientConnected(inetSocketAddress.getAddress().getHostAddress()));
-            }
-        });
-        try {
-            ChannelFuture channelFuture = serverBootstrap.bind(this.host, this.port).sync();
-            this.channel = channelFuture.channel();
-            this.running = true;
-            channelFuture.channel().closeFuture().sync();
-        } catch (InterruptedException ignored) {
-            this.running = false;
-        } finally {
-            this.running = false;
-            workerGroup.shutdownGracefully();
-            bossGroup.shutdownGracefully();
-        }
+        this.thunderServer.start(this.port);
     }
 
-    public void sendPacket(Packet packet) {
-        sendPacket(packet, null);
+    @Override
+    public void sendPacket(ThunderPacket paramPacket) {
+        this.thunderServer.sendPacket(paramPacket);
     }
 
-    public void sendPacket(Packet packet, Consumer<PacketState> consumer) {
-        for (Channel registeredChannel : getRegisteredChannels())
-            registeredChannel.writeAndFlush(packet).addListener(this.channelFutureListener(consumer));
+    @Override
+    public void sendPacket(ThunderPacket paramPacket, Consumer<PacketState> paramConsumer) {
+        this.thunderServer.sendPacket(paramPacket);
     }
 }

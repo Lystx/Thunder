@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.gravel.library.GravelAPI;
 import org.gravel.library.manager.account.Account;
 import org.gravel.library.manager.networking.packets.PacketInBoundHandler;
+import org.gravel.library.manager.networking.packets.out.PacketOutUpdatePlayer;
 import org.gravel.library.manager.user.GravelUser;
 import org.gravel.library.manager.user.UserStatus;
 import org.gravel.library.utils.AppendableMap;
@@ -24,6 +25,7 @@ public class PacketQueryLogOut extends PacketInBoundHandler<VsonObject> {
         System.out.println("[Server] " + gravelUser.getAccount().getName() + " has disconnected from GravelMessenger!");
         gravelUser.setStatus(UserStatus.OFFLINE);
         GravelAPI.getInstance().getUserManager().update(gravelUser);
+        GravelAPI.getInstance().sendPacket(new PacketOutUpdatePlayer(gravelUser));
         GravelAPI.getInstance().reload();
         return new VsonObject();
     }

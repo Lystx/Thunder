@@ -7,6 +7,7 @@
       <element id="module-output" name="Library" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/io/netty/netty-all/4.1.44.Final/netty-all-4.1.44.Final.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/formdev/flatlaf/1.1.1/flatlaf-1.1.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/Thunder.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
