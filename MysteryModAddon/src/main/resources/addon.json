@@ -1,8 +1,0 @@
-{
-  "name": "Emotes",
-  "minVersion": "0.7",
-  "version": "0.0.1",
-  "description": "Brings all emotes to MysteryMod",
-  "authors": ["gusosasi"],
-  "mainClass": "de.gusosasi.mysterymod.emotes.EmotesAddon"
-}

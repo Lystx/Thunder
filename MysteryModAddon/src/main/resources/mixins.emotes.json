@@ -1,7 +1,0 @@
-{
-  "required": true,
-  "package": "de.gusosasi.mysterymod.emotes.mixin",
-  "mixins": [
-    "CustomEmoteRender"
-  ]
-}
