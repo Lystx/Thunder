@@ -1,6 +1,7 @@
 
 package io.thunder.connection.base;
 
+import io.thunder.Thunder;
 import io.thunder.connection.ThunderConnection;
 import io.thunder.connection.extra.ThunderSession;
 import io.thunder.manager.packet.Packet;

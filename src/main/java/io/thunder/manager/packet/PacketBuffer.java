@@ -4,6 +4,7 @@ package io.thunder.manager.packet;
 
 import io.thunder.Thunder;
 import io.thunder.manager.utils.LogLevel;
+import io.vson.annotation.other.Vson;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -138,7 +139,7 @@ public class PacketBuffer {
      */
     @Deprecated
     public synchronized PacketBuffer writeObject(Object o) {
-        throw new UnsupportedOperationException("Not included at this point");
+        return this.writeString(Vson.get().parse(o).toString());
     }
 
     /**

@@ -1,35 +1,44 @@
 package io.thunder.manager.utils;
 
-import io.thunder.Thunder;
-import lombok.AllArgsConstructor;
 
 import java.util.function.Consumer;
 
-@AllArgsConstructor
-public class ThunderAction<T> {
+public interface ThunderAction<T> {
 
-    private final Consumer<T> consumer;
-    private final T t;
+    /**
+     * Performs the action of this
+     * ThunderAction synchronously
+     */
+    void perform();
 
+    /**
+     * Performs the action of this
+     * ThunderAction asynchronously
+     */
+    void performAsync();
 
-    public void perform() {
-        this.perform(t -> {});
-    }
+    /**
+     * Performs this action
+     * but you can work with the given T
+     * (async)
+     *
+     * @param consumer the consumer
+     */
+    void performAsync(Consumer<T> consumer);
 
-    public void performAsync() {
-        Thunder.EXECUTOR_SERVICE.execute(this::perform);
-    }
+    /**
+     * Performs this action
+     * but you can work with the given T
+     * (sync)
+     *
+     * @param consumer the consumer
+     */
+    void perform(Consumer<T> consumer);
 
-    public void performAsync(Consumer<T> consumer) {
-        Thunder.EXECUTOR_SERVICE.execute(() -> perform(consumer));
-    }
-
-    public void perform(Consumer<T> consumer) {
-        this.consumer.accept(t);
-        consumer.accept(this.t);
-    }
-
-    public T get() {
-        return this.t;
-    }
+    /**
+     * Returns the Value for the Consumer
+     *
+     * @return T value
+     */
+    T get();
 }

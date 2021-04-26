@@ -2,6 +2,8 @@
 
 package io.thunder.manager.packet;
 
+import io.vson.annotation.other.Vson;
+import io.vson.manage.vson.VsonParser;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -156,14 +158,14 @@ public class PacketReader {
     }
 
     /**
-     * This will someday read custom values
+     * This will read custom values
      * from InputStream (maybe serialized)
      *
      * @return Object from Stream
      */
-    @Deprecated
+    @Deprecated @SneakyThrows
     public <T> T readObject(Class<T> objectClass) {
-        throw new UnsupportedOperationException("Not available yet");
+        return Vson.get().unparse(new VsonParser(this.readString()).parse(), objectClass);
     }
 
 }

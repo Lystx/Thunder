@@ -17,10 +17,7 @@ import io.thunder.manager.packet.featured.QueryPacket;
 import io.thunder.manager.packet.handler.PacketAdapter;
 import io.thunder.manager.packet.handler.PacketHandler;
 import io.thunder.manager.tls.TLSBuilder;
-import io.thunder.manager.utils.LogLevel;
-import io.thunder.manager.utils.Logger;
-import io.thunder.manager.utils.PacketCompressor;
-import io.thunder.manager.utils.ThunderAction;
+import io.thunder.manager.utils.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,7 +25,6 @@ import lombok.SneakyThrows;
 
 import javax.net.ssl.SSLSocket;
 import java.io.*;
-import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -36,6 +32,7 @@ import java.nio.channels.Channel;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 public class Thunder {
 
@@ -220,8 +217,8 @@ public class Thunder {
         }
 
         @Override
-        public synchronized ThunderAction<ThunderClient> connect(String host, int port) {
-            return new ThunderAction<>(thunderClient -> {
+        public synchronized ImplThunderAction<ThunderClient> connect(String host, int port) {
+            return new ImplThunderAction<>(thunderClient -> {
 
                 if (socket != null && !socket.isClosed()) throw new IllegalStateException("Client not closed");
                 if (host.isEmpty() || port == -1) throw new IllegalStateException("Host and port are not set");
@@ -407,9 +404,9 @@ public class Thunder {
         }
 
         @Override
-        public synchronized ThunderAction<ThunderServer> start(int port) {
+        public synchronized ImplThunderAction<ThunderServer> start(int port) {
 
-            return new ThunderAction<>(thunderServer -> {
+            return new ImplThunderAction<>(thunderServer -> {
                 LOGGER.log(LogLevel.DEBUG, "Server starting...");
 
                 try {
@@ -670,6 +667,35 @@ public class Thunder {
          */
         public ThunderSession getSession(UUID uuid) {
             return this.connectedSessions.stream().filter(implThunderSession -> implThunderSession.getUniqueId().equals(uuid)).findFirst().orElse(null);
+        }
+    }
+
+    @AllArgsConstructor
+    public static class ImplThunderAction<T> implements ThunderAction<T> {
+
+        private final Consumer<T> consumer;
+        private final T t;
+
+
+        public void perform() {
+            this.perform(t -> {});
+        }
+
+        public void performAsync() {
+            EXECUTOR_SERVICE.execute(this::perform);
+        }
+
+        public void performAsync(Consumer<T> consumer) {
+            EXECUTOR_SERVICE.execute(() -> perform(consumer));
+        }
+
+        public void perform(Consumer<T> consumer) {
+            this.consumer.accept(t);
+            consumer.accept(this.t);
+        }
+
+        public T get() {
+            return this.t;
         }
     }
 }

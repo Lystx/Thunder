@@ -6,7 +6,6 @@ import io.thunder.Thunder;
 import io.thunder.connection.ThunderConnection;
 import io.thunder.manager.packet.Packet;
 import io.thunder.manager.packet.ThunderPacket;
-import io.thunder.manager.packet.handler.PacketHandler;
 import io.thunder.manager.utils.PacketCompressor;
 import io.thunder.manager.utils.ThunderAction;
 import lombok.SneakyThrows;
