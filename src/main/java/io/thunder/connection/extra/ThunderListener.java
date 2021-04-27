@@ -105,6 +105,7 @@ public interface ThunderListener {
         packet.setPacket(_class.getSimpleName());
         bufferedPacket.setData(packet.toString());
 
+        thunderConnection.getPacketAdapter().handle(bufferedPacket);
         bufferedPacket.handle(thunderConnection);
         this.handlePacket(bufferedPacket, thunderConnection); //Then handling the ready built packet
     }
