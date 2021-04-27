@@ -18,6 +18,7 @@ import io.thunder.manager.packet.handler.PacketAdapter;
 import io.thunder.manager.packet.handler.PacketHandler;
 import io.thunder.manager.tls.TLSBuilder;
 import io.thunder.manager.utils.*;
+import io.vson.elements.object.VsonObject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -200,8 +201,7 @@ public class Thunder {
 
         public ImplThunderClient(ThunderFactorySocket sf) {
             this.sf = sf;
-            this.packetAdapter = new PacketAdapter();
-            this.packetAdapter.addHandler(new ThunderPacketHandlerQuery(this));
+            this.packetAdapter = new PacketAdapter(this);
 
             this.session = new ImplThunderSession("[t:" + System.currentTimeMillis() + ", j: " + System.getProperty("java.version") + "]", UUID.randomUUID(), new LinkedList<>(), System.currentTimeMillis(), null, false);
         }
@@ -387,8 +387,7 @@ public class Thunder {
             this.cf = cf;
 
             this.thunderClients = new LinkedList<>();
-            this.packetAdapter = new PacketAdapter();
-            this.packetAdapter.addHandler(new ThunderPacketHandlerQuery(this));
+            this.packetAdapter = new PacketAdapter(this);
 
             this.session = new ImplThunderSession("[t:" + System.currentTimeMillis() + ", j: " + System.getProperty("java.version") + "]", UUID.randomUUID(), new LinkedList<>(), System.currentTimeMillis(), null, false);
         }
@@ -447,6 +446,9 @@ public class Thunder {
 
         @Override
         public Query sendQuery(QueryPacket packet) {
+            if (this.thunderClients.size() == 0) {
+                return new Query(new VsonObject().append("_result", "No ThunderClients are connected to perform a Query!"));
+            }
             final Query[] query = {null};
             UUID uuid = UUID.randomUUID();
             packet.setUniqueId(uuid);

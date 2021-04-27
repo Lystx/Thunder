@@ -22,6 +22,11 @@ import java.net.ServerSocket;
  */
 public interface ThunderServer extends ThunderConnection {
 
+
+    static ThunderServer newInstance() {
+        return Thunder.createServer();
+    }
+
     /**
      * Starts the Server on a given port
      * Host is your ip (makes sense doesn't it?)

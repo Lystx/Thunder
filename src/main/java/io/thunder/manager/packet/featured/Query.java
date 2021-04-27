@@ -4,6 +4,8 @@ import io.vson.elements.object.VsonObject;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.function.Consumer;
+
 /**
  * This class is the Query for the {@link QueryPacket}
  * to get more Information
@@ -24,6 +26,10 @@ public class Query implements Serializable {
      */
     public VsonObject get() {
         return this.result;
+    }
+
+    public void handleResult(Consumer<VsonObject> consumer) {
+        consumer.accept(this.result);
     }
 
     /**

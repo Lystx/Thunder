@@ -1,3 +1,4 @@
+import io.thunder.annotation.PacketData;
 import io.thunder.connection.ThunderConnection;
 import io.thunder.manager.packet.BufferedPacket;
 import io.thunder.manager.packet.PacketBuffer;
@@ -6,6 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter @AllArgsConstructor
+
+@PacketData(
+        packet = TestBufferedPacket.class,
+        id = 0x00,
+        compress = true,
+        usage = {"This packet is used to show an example of a buffered packet"}
+)
 public class TestBufferedPacket extends BufferedPacket {
 
     private String name;

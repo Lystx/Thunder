@@ -26,6 +26,12 @@ import java.net.Socket;
  */
 public interface ThunderClient extends ThunderConnection {
 
+
+
+    static ThunderClient newInstance() {
+        return Thunder.createClient();
+    }
+
     /**
      * Connects to a {@link ThunderServer}
      * @param host the host to connect to

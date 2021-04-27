@@ -20,15 +20,16 @@ public abstract class QueryPacket extends BufferedPacket {
     private Query query;
     private boolean sendBack = true;
 
-
     @Override
-    public void read(PacketReader packetReader) {
-        this.sendBack = packetReader.readBoolean();
+    public void read(PacketReader reader) {
+        this.sendBack = reader.readBoolean();
+        this.uniqueId = UUID.fromString(reader.readString());
     }
 
     @Override
     public void write(PacketBuffer buffer) {
         buffer.writeBoolean(this.sendBack);
+        buffer.writeString(uniqueId.toString());
     }
 
     /**

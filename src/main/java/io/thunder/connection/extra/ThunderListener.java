@@ -29,7 +29,7 @@ public interface ThunderListener {
      *     @param thunderConnection > The client
      * Client:
      *    -> Called when connected to the server
-     *     @param thunderConnection > The server
+     *     @param thunderConnection > The Client itsself
      */
     void handleConnect(ThunderConnection thunderConnection);
 
@@ -39,7 +39,7 @@ public interface ThunderListener {
      *     @param thunderConnection > The client
      * Client:
      *    -> Called when disconnected from the server
-     *     @param thunderConnection > The server
+     *     @param thunderConnection > The Client
      */
     void handleDisconnect(ThunderConnection thunderConnection);
 
