@@ -36,6 +36,13 @@ public class TLS {
 
     }
 
+    /**
+     * Returns a usable TLS Parameter
+     *
+     * @param supported the supported options
+     * @param available the available options
+     * @return String-Array
+     */
     public static String[] getUsableTLS(String[] supported, List<String> available) {
         List<String> filtered = new ArrayList<>(available.size());
         List<String> supportedList = Arrays.asList(supported);

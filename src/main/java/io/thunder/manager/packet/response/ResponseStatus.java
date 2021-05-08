@@ -11,7 +11,7 @@ import lombok.Getter;
 @AllArgsConstructor @Getter
 public enum ResponseStatus {
 
-    SUCESS(0x00),
+    SUCCESS(0x00),
     FAILED(0x40),
     FORBIDDEN(0x42),
     CONFLICT(0x43),

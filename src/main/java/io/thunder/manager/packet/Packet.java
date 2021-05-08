@@ -46,20 +46,19 @@ public abstract class Packet {
      * The protocolVersion of this Packet
      * Used for security to check for right packets
      */
-    protected int protocolVersion = 0;
+    protected int protocolVersion = 47;
 
     /**
      * The protocolId of this Packet
      * Used for security to check for right packets
      */
-    protected int protocolId = -1;
+    protected int protocolId = 6;
 
     /**
      * The connection that handles this
      * Packet over the whole time
      */
     private ThunderConnection connection;
-
 
     /**
      * Will be called when the packet is received and fully
@@ -141,6 +140,6 @@ public abstract class Packet {
 
     @Override
     public String toString() {
-        return "";
+        return "(Packet : [" + getClass().getSimpleName() + "] UUID : [" + getUniqueId() + "] ProtocolID : [" + getProtocolId() + "] ProtocolVersion: [" + getProtocolVersion() + "] Time : [" + getProcessingTime() + " ms] Data : [" + getData().length + " bytes])";
     }
 }
