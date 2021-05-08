@@ -1,6 +1,6 @@
 package io.thunder.manager.packet.handler;
 
-import io.thunder.manager.packet.ThunderPacket;
+import io.thunder.manager.packet.Packet;
 
 /**
  * This Interface is used to handle
@@ -16,5 +16,5 @@ public interface PacketHandler {
      *
      * @param packet the given Packet
      */
-    void handle(ThunderPacket packet);
+    void handle(Packet packet);
 }

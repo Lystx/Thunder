@@ -1,6 +1,6 @@
 
 
-package io.thunder.manager.tls;
+package io.thunder.connection.tls;
 
 import javax.net.ssl.*;
 import java.io.IOException;

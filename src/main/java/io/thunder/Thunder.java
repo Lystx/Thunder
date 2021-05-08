@@ -1,24 +1,19 @@
 package io.thunder;
 
-
-import io.thunder.annotation.PacketData;
 import io.thunder.connection.*;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
 import io.thunder.connection.extra.ThunderListener;
 import io.thunder.connection.extra.ThunderSession;
-import io.thunder.connection.handler.ThunderPacketHandlerQuery;
 import io.thunder.manager.factory.ThunderFactoryClient;
 import io.thunder.manager.factory.ThunderFactoryServerSocket;
 import io.thunder.manager.factory.ThunderFactorySocket;
+import io.thunder.manager.logger.LogLevel;
+import io.thunder.manager.logger.Logger;
 import io.thunder.manager.packet.*;
-import io.thunder.manager.packet.featured.Query;
-import io.thunder.manager.packet.featured.QueryPacket;
 import io.thunder.manager.packet.handler.PacketAdapter;
-import io.thunder.manager.packet.handler.PacketHandler;
-import io.thunder.manager.tls.TLSBuilder;
+import io.thunder.connection.tls.TLSBuilder;
 import io.thunder.manager.utils.*;
-import io.vson.elements.object.VsonObject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,20 +33,10 @@ import java.util.function.Consumer;
 public class Thunder {
 
     public static final Logger LOGGER = new Logger(); //Custom logger for Thunder
-    public static final Map<Class<? extends ThunderPacket>, PacketData> REGISTERED_PACKETS = new HashMap<>(); //Custom PacketData
 
     public static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool(); //ExecutorService to make things run async
-
     @Getter
     private static boolean USE_COMPRESSOR = false;
-
-    public static void registerPacket(Class<? extends ThunderPacket> packetClass) {
-        final PacketData annotation = packetClass.getAnnotation(PacketData.class);
-        if (annotation == null) {
-            throw new NullPointerException("Couldn't register Packet for class " + packetClass + " because it doesn't have a @PacketData Annotation!");
-        }
-        REGISTERED_PACKETS.put(packetClass, annotation);
-    }
 
     public static void useCompressor(boolean b) {
         USE_COMPRESSOR = b;
@@ -74,27 +59,7 @@ public class Thunder {
      * @return the created Client
      */
     public static ThunderClient createClient() {
-        return createClient(new ThunderListener() {
-            @Override
-            public void handleConnect(ThunderConnection thunderConnection) {
-
-            }
-
-            @Override
-            public void handleDisconnect(ThunderConnection thunderConnection) {
-
-            }
-
-            @Override
-            public void handlePacket(ThunderPacket packet, ThunderConnection thunderConnection) throws IOException {
-
-            }
-
-            @Override
-            public void read(Packet packet, ThunderConnection thunderConnection) throws IOException {
-
-            }
-        });
+        return createClient(new EmptyThunderListener());
     }
 
     /**
@@ -146,27 +111,7 @@ public class Thunder {
      * @return created Server
      */
     public static ThunderServer createServer() {
-        return createServer(new ThunderListener() {
-            @Override
-            public void handleConnect(ThunderConnection thunderConnection) {
-
-            }
-
-            @Override
-            public void handleDisconnect(ThunderConnection thunderConnection) {
-
-            }
-
-            @Override
-            public void handlePacket(ThunderPacket packet, ThunderConnection thunderConnection) throws IOException {
-
-            }
-
-            @Override
-            public void read(Packet packet, ThunderConnection thunderConnection) throws IOException {
-
-            }
-        });
+        return createServer(new EmptyThunderListener());
     }
 
     /**
@@ -201,10 +146,11 @@ public class Thunder {
 
         public ImplThunderClient(ThunderFactorySocket sf) {
             this.sf = sf;
-            this.packetAdapter = new PacketAdapter(this);
+            this.packetAdapter = new PacketAdapter();
 
             this.session = new ImplThunderSession("[t:" + System.currentTimeMillis() + ", j: " + System.getProperty("java.version") + "]", UUID.randomUUID(), new LinkedList<>(), System.currentTimeMillis(), null, false);
-        }
+       }
+
 
         @Override
         public void setName(String name) {
@@ -250,15 +196,42 @@ public class Thunder {
             if (this.clientListener != null) this.clientListener.handleConnect(this);
         }
 
+        @Override @SneakyThrows
+        public void flush() {
+            this.socket.getOutputStream().flush();
+
+        }
+
         private void listenerThreadImpl() {
             while (true) {
-                Packet packet;
+                Packet packet = null;
 
                 try {
-                    packet = PacketReader.fromStream(dataInputStream);
-                    if (Thunder.isUSE_COMPRESSOR()) {
-                        packet = PacketCompressor.decompress(packet);
-                    }
+
+                    long time = dataInputStream.readLong();
+                    int protocolId = dataInputStream.readInt();
+                    int protocolVersion = dataInputStream.readInt();
+                    UUID uniqueId = new UUID(dataInputStream.readLong(), dataInputStream.readLong());
+                    int dataLength = dataInputStream.readInt();
+                    byte[] data = new byte[dataLength]; dataInputStream.readFully(data);
+
+
+                    packet = new Packet() {
+                        @Override
+                        public void write(PacketBuffer buf) {}
+
+                        @Override
+                        public void read(PacketBuffer buf) {}
+                    };
+
+
+                    packet.setData(data);
+
+                    packet.setProcessingTime(time);
+                    packet.setProtocolId(protocolId);
+                    packet.setProtocolVersion(protocolVersion);
+                    packet.setUniqueId(uniqueId);
+
                 } catch (SocketException | EOFException e) {
                     disconnect();
                     break;
@@ -271,7 +244,7 @@ public class Thunder {
 
                 if (clientListener != null) {
                     try {
-                        clientListener.handlePacket(packet, this);
+                        clientListener.readPacket(packet, this);
                     } catch (IOException e) {
                         LOGGER.log(LogLevel.WARNING, "Client was unable to handle packet " + packet);
                     } catch (Exception e) {
@@ -287,51 +260,13 @@ public class Thunder {
         @Override
         public synchronized void sendPacket(Packet packet) {
             if (!isConnected()) return;
-
             try {
                 LOGGER.log(LogLevel.DEBUG, "Client sending packet " + packet);
-                packet.write(dataOutputStream);
+                ThunderConnection.processOut(packet, dataOutputStream);
                 this.dataOutputStream.flush();
             } catch (final IOException e) {
                 LOGGER.log(LogLevel.DEBUG, "Client couldn't send packet " + packet);
             }
-        }
-
-        @Override
-        public Query sendQuery(QueryPacket packet) {
-            final Query[] query = {null};
-            UUID uuid = UUID.randomUUID();
-            packet.setUniqueId(uuid);
-
-            this.getPacketAdapter().addHandler(new PacketHandler() {
-                @Override
-                public void handle(ThunderPacket packet) {
-                    if (packet instanceof QueryPacket) {
-                        QueryPacket resultPacket = (QueryPacket)packet;
-                        if (uuid.equals(resultPacket.getUniqueId())) {
-                            query[0] = resultPacket.getQuery();
-                            getPacketAdapter().removeHandler(this);
-                        }
-                    }
-                }
-            });
-
-            this.sendPacket(packet);
-            int count = 0;
-
-            while (query[0] == null && count++ < 3000) {
-                try {
-                    Thread.sleep(0, 500000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    e.printStackTrace();
-                }
-            }
-            if (count >= 2999) {
-                Query r = new Query(null);
-                query[0] = r;
-            }
-            return query[0];
         }
 
         @Override
@@ -387,9 +322,10 @@ public class Thunder {
             this.cf = cf;
 
             this.thunderClients = new LinkedList<>();
-            this.packetAdapter = new PacketAdapter(this);
+            this.packetAdapter = new PacketAdapter();
 
             this.session = new ImplThunderSession("[t:" + System.currentTimeMillis() + ", j: " + System.getProperty("java.version") + "]", UUID.randomUUID(), new LinkedList<>(), System.currentTimeMillis(), null, false);
+
         }
 
         @Override
@@ -438,65 +374,27 @@ public class Thunder {
             }
         }
 
-
-        @Override
-        public void sendPacket(ThunderPacket packet, ThunderClient client) {
-            this.sendPacket(ThunderConnection.transform(packet), client);
-        }
-
-        @Override
-        public Query sendQuery(QueryPacket packet) {
-            if (this.thunderClients.size() == 0) {
-                return new Query(new VsonObject().append("_result", "No ThunderClients are connected to perform a Query!"));
+        @SneakyThrows @Override
+        public void flush() {
+            for (ThunderClient thunderClient : this.thunderClients) {
+                final Socket socket = thunderClient.getSocket();
+                socket.getOutputStream().flush();
             }
-            final Query[] query = {null};
-            UUID uuid = UUID.randomUUID();
-            packet.setUniqueId(uuid);
-
-            this.getPacketAdapter().addHandler(new PacketHandler() {
-                @Override
-                public void handle(ThunderPacket packet) {
-                    if (packet instanceof QueryPacket) {
-                        QueryPacket resultPacket = (QueryPacket)packet;
-                        if (uuid.equals(resultPacket.getUniqueId())) {
-                            query[0] = resultPacket.getQuery();
-                            getPacketAdapter().removeHandler(this);
-                        }
-                    }
-                }
-            });
-
-            this.sendPacket(packet);
-            int count = 0;
-
-            while (query[0] == null && count++ < 3000) {
-                try {
-                    Thread.sleep(0, 500000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    e.printStackTrace();
-                }
-            }
-            if (count >= 2999) {
-                Query r = new Query(null);
-                query[0] = r;
-            }
-            return query[0];
         }
 
         @Override @SneakyThrows
         public void sendPacket(Packet packet, ThunderClient client) {
 
-            if (Thunder.isUSE_COMPRESSOR()) {
-                packet = PacketCompressor.compress(packet);
-            }
             DataOutputStream dataOutputStream = new DataOutputStream(client.getSocket().getOutputStream());
-            packet.write(dataOutputStream);
+            ThunderConnection.processOut(packet, dataOutputStream);
         }
 
         @Override
-        public void sendPacket(ThunderPacket packet, ThunderSession session) {
+        public void sendPacket(Packet packet, ThunderSession session) {
             ThunderClient thunderClient = this.thunderClients.stream().filter(thunderClient1 -> thunderClient1.getSession().getUniqueId().equals(session.getUniqueId())).findFirst().orElse(null);
+            if (thunderClient == null) {
+                return;
+            }
             this.sendPacket(packet, thunderClient);
         }
 
@@ -528,19 +426,14 @@ public class Thunder {
                         }
 
                         @Override
-                        public void handlePacket(ThunderPacket packet, ThunderConnection thunderClient) throws IOException {
-
-                        }
-
-                        @Override
-                        public void read(Packet packet, ThunderConnection thunderConnection) throws IOException {
-
-                        }
-
-                        @Override
                         public void handlePacket(Packet packet, ThunderConnection thunderClient) throws IOException {
+
+                        }
+
+                        @Override
+                        public void readPacket(Packet packet, ThunderConnection thunderClient) throws IOException {
                             if (serverListener != null) {
-                                serverListener.handlePacket(packet, thunderClient);
+                                serverListener.readPacket(packet, ImplThunderServer.this);
                             }
                         }
                     });
@@ -591,6 +484,7 @@ public class Thunder {
         public boolean isConnected() {
             return true;
         }
+
     }
 
     private static class TLSThunderClient extends ImplThunderClient {
@@ -698,6 +592,24 @@ public class Thunder {
 
         public T get() {
             return this.t;
+        }
+    }
+
+    private static class EmptyThunderListener implements ThunderListener {
+
+        @Override
+        public void handlePacket(Packet packet, ThunderConnection thunderConnection) throws IOException {
+
+        }
+
+        @Override
+        public void handleConnect(ThunderConnection thunderConnection) {
+
+        }
+
+        @Override
+        public void handleDisconnect(ThunderConnection thunderConnection) {
+
         }
     }
 }

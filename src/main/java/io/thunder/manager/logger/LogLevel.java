@@ -1,4 +1,4 @@
-package io.thunder.manager.utils;
+package io.thunder.manager.logger;
 
 public enum LogLevel {
 

@@ -5,8 +5,6 @@ package io.thunder.connection.base;
 import io.thunder.Thunder;
 import io.thunder.connection.ThunderConnection;
 import io.thunder.manager.packet.Packet;
-import io.thunder.manager.packet.ThunderPacket;
-import io.thunder.manager.utils.PacketCompressor;
 import io.thunder.manager.utils.ThunderAction;
 import lombok.SneakyThrows;
 
@@ -25,7 +23,6 @@ import java.net.Socket;
  * it directly and not only to all connected clients from a server
  */
 public interface ThunderClient extends ThunderConnection {
-
 
 
     static ThunderClient newInstance() {
@@ -52,21 +49,6 @@ public interface ThunderClient extends ThunderConnection {
      */
     Socket getSocket();
 
-    /**
-     * Writes a packet directly into the
-     * {@link java.io.OutputStream} of the current Socket
-     *
-     * @param packet packet to write
-     */
-    @SneakyThrows
-    default void writePacket(Packet packet) {
-        DataOutputStream dataOutputStream = new DataOutputStream(this.getSocket().getOutputStream());
-        if (Thunder.isUSE_COMPRESSOR()) {
-            PacketCompressor.compress(packet).write(dataOutputStream);
-        } else {
-            packet.write(dataOutputStream);
-        }
-    }
 
     /**
      * Returns Information on this Client
@@ -77,12 +59,16 @@ public interface ThunderClient extends ThunderConnection {
     }
 
     /**
-     * Writes a Packet and transforms it
-     * if its not a raw Packet
-     * @param packet the packet to send
+     * Writes a packet directly into the
+     * {@link java.io.OutputStream} of the current Socket
+     *
+     * @param packet packet to write
      */
-    default void writePacket(ThunderPacket packet) {
-        this.writePacket(ThunderConnection.transform(packet));
+    @SneakyThrows
+    default void writePacket(Packet packet) {
+        DataOutputStream dataOutputStream = new DataOutputStream(this.getSocket().getOutputStream());
+
+        ThunderConnection.processOut(packet, dataOutputStream);
     }
 
 }

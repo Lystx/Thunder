@@ -1,8 +1,7 @@
 package io.thunder.manager.packet.handler;
 
 import io.thunder.connection.ThunderConnection;
-import io.thunder.connection.handler.ThunderPacketHandlerQuery;
-import io.thunder.manager.packet.ThunderPacket;
+import io.thunder.manager.packet.Packet;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -19,9 +18,8 @@ public class PacketAdapter {
     /**
      * Creating the List of PacketHandler
      */
-    public PacketAdapter(ThunderConnection thunderConnection) {
+    public PacketAdapter() {
         this.packetHandlers = new LinkedList<>();
-        this.packetHandlers.add(new ThunderPacketHandlerQuery(thunderConnection));
     }
 
     /**
@@ -41,13 +39,13 @@ public class PacketAdapter {
     }
 
     /**
-     * Handles the given {@link ThunderPacket}
+     * Handles the given {@link Packet}
      * and iterates through all registered {@link PacketHandler}s
-     * and calls the {@link PacketHandler#handle(ThunderPacket)} Method
+     * and calls the {@link PacketHandler#handle(Packet)} Method
      *
      * @param packet the Packet to handle
      */
-    public void handle(ThunderPacket packet) {
+    public void handle(Packet packet) {
         for (PacketHandler packetHandler : this.packetHandlers) {
             packetHandler.handle(packet);
         }

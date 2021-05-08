@@ -5,7 +5,6 @@ import io.thunder.Thunder;
 import io.thunder.connection.ThunderConnection;
 import io.thunder.connection.extra.ThunderSession;
 import io.thunder.manager.packet.Packet;
-import io.thunder.manager.packet.ThunderPacket;
 import io.thunder.manager.utils.ThunderAction;
 
 import java.net.ServerSocket;
@@ -36,28 +35,20 @@ public interface ThunderServer extends ThunderConnection {
     ThunderAction<ThunderServer> start(int port);
 
     /**
+     * Sends a {@link Packet} to a specific {@link ThunderSession}
+     *
+     * @param packet the Packet to send
+     * @param session the Session to receive it
+     */
+    void sendPacket(Packet packet, ThunderSession session);
+
+    /**
      * Sends a {@link Packet} to a specific {@link ThunderClient}
      *
      * @param packet the Packet to send
      * @param client the Client to receive it
      */
     void sendPacket(Packet packet, ThunderClient client);
-
-    /**
-     * Sends a {@link Packet} to a specific {@link ThunderSession}
-     *
-     * @param packet the Packet to send
-     * @param session the Session to receive it
-     */
-    void sendPacket(ThunderPacket packet, ThunderSession session);
-
-    /**
-     * Sends a {@link ThunderPacket} to a specific {@link ThunderClient}
-     *
-     * @param packet the Packet to send
-     * @param client the Client to receive it
-     */
-    void sendPacket(ThunderPacket packet, ThunderClient client);
 
     /**
      * @return the ServerSocket

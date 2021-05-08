@@ -5,13 +5,16 @@ import io.thunder.connection.base.ThunderServer;
 import io.thunder.connection.extra.ThunderListener;
 import io.thunder.connection.extra.ThunderSession;
 import io.thunder.manager.packet.*;
-import io.thunder.manager.packet.featured.Query;
-import io.thunder.manager.packet.featured.QueryPacket;
 import io.thunder.manager.packet.handler.PacketAdapter;
 import io.thunder.manager.packet.handler.PacketHandler;
-import io.vson.elements.object.VsonObject;
-import io.vson.enums.FileFormat;
-import lombok.SneakyThrows;
+import io.thunder.manager.packet.response.PacketRespond;
+import io.thunder.manager.packet.response.Response;
+import io.thunder.manager.packet.response.ResponseStatus;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.function.Consumer;
 
 /**
  * This interface is used to define the {@link ThunderServer}
@@ -46,22 +49,61 @@ public interface ThunderConnection {
      */
     void sendPacket(Packet packet);
 
-    default void sendPacket(ThunderPacket packet) {
-        this.sendPacket(transform(packet));
-    }
-
-    static Packet transform(ThunderPacket packet) {
-        if (packet instanceof BufferedPacket) {
-            return fromBuffered(((BufferedPacket)packet));
-        } else {
-            return fromAbstract(packet);
-        }
-    }
-
-
     default ThunderConnection addPacketHandler(PacketHandler packetHandler) {
         this.getPacketAdapter().addHandler(packetHandler);
         return this;
+    }
+
+    /**
+     * Calls the {@link ThunderConnection#transferToResponse(Packet)} Method
+     * It just simplify's it into a {@link Consumer} to work with it
+     *
+     * @param packet the Packet to send
+     * @param consumer the Consumer to work with
+     */
+    default void sendPacket(Packet packet, Consumer<Response> consumer) {
+        consumer.accept(this.transferToResponse(packet));
+    }
+
+    /**
+     * Calls the {@link ThunderConnection#sendPacket(Packet)} Method
+     * This will wait for the given Packet to respond
+     * And if the {@link Packet} responded it will return its {@link Response}
+     * to work with it
+     *
+     * @param pp the Packet await Response for
+     * @return the Response the Packet gets
+     */
+    default Response transferToResponse(Packet pp) {
+        Response[] response = {null};
+        getPacketAdapter().addHandler(new PacketHandler() {
+            @Override
+            public void handle(Packet packet) {
+                if (packet instanceof PacketRespond) {
+                    PacketRespond packetRespond = (PacketRespond)packet;
+                    if (packet.getUniqueId().equals(pp.getUniqueId())) {
+                        response[0] = new Response(packetRespond);
+                        getPacketAdapter().removeHandler(this);
+                    }
+                }
+            }
+        });
+
+        this.sendPacket(pp);
+
+        int count = 0;
+        while (response[0] == null && count++ < 3000) {
+            try {
+                Thread.sleep(0, 500000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                e.printStackTrace();
+            }
+        }
+        if (count >= 2999) {
+            response[0] = new Response(new PacketRespond("The Request timed out", ResponseStatus.FAILED));
+        }
+        return response[0];
     }
 
     /**
@@ -70,50 +112,11 @@ public interface ThunderConnection {
     PacketAdapter getPacketAdapter();
 
     /**
-     * Sends a {@link Query} to receive
-     * Realtime-Results
-     *
-     * @param packet the QueryPacket
-     * @return the Query
+     * Flushes the Connection
+     * and clears every Packet thats still
+     * in the ConnectionGateway
      */
-    Query sendQuery(QueryPacket packet);
-
-    /**
-     * Transforms a {@link BufferedPacket} into a
-     * normal and raw {@link Packet}
-     *
-     * @param packet the packet to transform
-     * @return the raw packet
-     */
-    @SneakyThrows
-    static Packet fromBuffered(BufferedPacket packet) {
-        PacketBuffer packetBuffer = new PacketBuffer();
-        packetBuffer.writeString(packet.getClass().getName());
-        packet.write(packetBuffer);
-        return packetBuffer.build();
-    }
-
-    /**
-     * Transforms a {@link ThunderPacket} into a
-     * normal and raw {@link Packet}
-     *
-     * @param packet the packet to transform
-     * @return the raw packet
-     */
-    @SneakyThrows
-    static Packet fromAbstract(ThunderPacket packet) {
-
-        VsonObject vsonObject = new VsonObject();
-        vsonObject.append("_class", packet.getClass().getName());
-        vsonObject.append("_processingTime", System.currentTimeMillis());
-
-        vsonObject.append("_abstractPacket", packet);
-
-        PacketBuffer packetBuffer = new PacketBuffer();
-        packetBuffer.writeString(vsonObject.toString(FileFormat.RAW_JSON));
-
-        return packetBuffer.build();
-    }
+    void flush();
 
     /**
      * Disconnects the connection
@@ -142,4 +145,29 @@ public interface ThunderConnection {
      */
     boolean isConnected();
 
+
+    /**
+     * Writes a packet to a Destination (Mostly another {@link ThunderClient}
+     * or {@link ThunderServer} and sets the ProcessingTime of the packet to now
+     *
+     * @param dataOutputStream the {@link OutputStream} to write the Packet to
+     * @throws IOException
+     */
+    static void processOut(Packet packet, DataOutputStream dataOutputStream) throws IOException {
+
+        PacketBuffer packetBuffer = new PacketBuffer();
+        packetBuffer.writeString(packet.getClass().getName());
+        packet.write(packetBuffer);
+        packet.setData(packetBuffer.build());
+
+        packet.setProcessingTime(System.currentTimeMillis());
+
+        dataOutputStream.writeLong(packet.getProcessingTime());
+        dataOutputStream.writeInt(packet.getProtocolId());
+        dataOutputStream.writeInt(packet.getProtocolVersion());
+        dataOutputStream.writeLong(packet.getUniqueId().getLeastSignificantBits());
+        dataOutputStream.writeLong(packet.getUniqueId().getMostSignificantBits());
+        dataOutputStream.writeInt(packet.getData().length);
+        dataOutputStream.write(packet.getData());
+    }
 }

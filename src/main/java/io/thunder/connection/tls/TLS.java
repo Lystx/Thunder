@@ -1,4 +1,4 @@
-package io.thunder.manager.tls;
+package io.thunder.connection.tls;
 
 import java.util.ArrayList;
 import java.util.Arrays;

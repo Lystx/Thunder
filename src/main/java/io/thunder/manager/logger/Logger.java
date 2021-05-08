@@ -1,4 +1,4 @@
-package io.thunder.manager.utils;
+package io.thunder.manager.logger;
 
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;

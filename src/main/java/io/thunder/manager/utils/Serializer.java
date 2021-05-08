@@ -1,0 +1,44 @@
+package io.thunder.manager.utils;
+
+import com.sun.org.apache.xml.internal.security.utils.Base64;
+import lombok.AllArgsConstructor;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+@AllArgsConstructor
+public class Serializer<T> {
+
+    private final T object;
+
+    public Serializer() {
+        this(null);
+    }
+
+    public String serialize() {
+        try {
+            ByteArrayOutputStream bo = new ByteArrayOutputStream();
+            ObjectOutputStream so = new ObjectOutputStream(bo);
+            so.writeObject(this.object);
+            so.flush();
+            return Base64.encode(bo.toByteArray());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public T deserialize(String s) {
+        try {
+            byte[] b = Base64.decode(s.getBytes());
+            ByteArrayInputStream bi = new ByteArrayInputStream(b);
+            ObjectInputStream si = new ObjectInputStream(bi);
+            return (T) si.readObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+}
