@@ -1,9 +1,9 @@
-package io.thunder.manager.packet;
+package io.thunder.packet;
 
 
 import io.thunder.connection.ThunderConnection;
-import io.thunder.manager.packet.response.PacketRespond;
-import io.thunder.manager.packet.response.ResponseStatus;
+import io.thunder.packet.response.PacketRespond;
+import io.thunder.packet.response.ResponseStatus;
 import io.vson.annotation.other.Vson;
 import io.vson.enums.FileFormat;
 import lombok.Getter;

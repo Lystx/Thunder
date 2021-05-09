@@ -1,15 +1,19 @@
 package io.thunder.connection;
 
+import io.thunder.codec.PacketCodec;
+import io.thunder.codec.PacketDecoder;
+import io.thunder.codec.PacketEncoder;
+import io.thunder.connection.base.ThunderChannel;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
 import io.thunder.connection.extra.ThunderListener;
 import io.thunder.connection.extra.ThunderSession;
-import io.thunder.manager.packet.*;
-import io.thunder.manager.packet.handler.PacketAdapter;
-import io.thunder.manager.packet.handler.PacketHandler;
-import io.thunder.manager.packet.response.PacketRespond;
-import io.thunder.manager.packet.response.Response;
-import io.thunder.manager.packet.response.ResponseStatus;
+import io.thunder.packet.*;
+import io.thunder.packet.handler.PacketAdapter;
+import io.thunder.packet.handler.PacketHandler;
+import io.thunder.packet.response.PacketRespond;
+import io.thunder.packet.response.Response;
+import io.thunder.packet.response.ResponseStatus;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -135,6 +139,36 @@ public interface ThunderConnection {
     ThunderSession getSession();
 
     /**
+     * Adds a De or Encoder to this Connection
+     *
+     * @param packetCodec the PacketCodec
+     */
+    void addCodec(PacketCodec packetCodec);
+
+    /**
+     * Returns the Channel of the Connection
+     * where all the data is send
+     *
+     * @return channel of connection
+     */
+    ThunderChannel getChannel();
+
+
+    /**
+     * Returns the Encoder
+     *
+     * @return encoder
+     */
+    PacketEncoder getEncoder();
+
+    /**
+     * Returns the Decoder
+     *
+     * @return decoder
+     */
+    PacketDecoder getDecoder();
+
+    /**
      * @return Information on this connection
      */
     String asString();
@@ -155,19 +189,12 @@ public interface ThunderConnection {
      */
     static void processOut(Packet packet, DataOutputStream dataOutputStream) throws IOException {
 
-        PacketBuffer packetBuffer = new PacketBuffer();
-        packetBuffer.writeString(packet.getClass().getName());
-        packet.write(packetBuffer);
-        packet.setData(packetBuffer.build());
+        PacketEncoder encoder = packet.getConnection().getEncoder();
+        try {
+            encoder.encode(packet, dataOutputStream, new PacketBuffer());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        packet.setProcessingTime(System.currentTimeMillis());
-
-        dataOutputStream.writeLong(packet.getProcessingTime());
-        dataOutputStream.writeInt(packet.getProtocolId());
-        dataOutputStream.writeInt(packet.getProtocolVersion());
-        dataOutputStream.writeLong(packet.getUniqueId().getLeastSignificantBits());
-        dataOutputStream.writeLong(packet.getUniqueId().getMostSignificantBits());
-        dataOutputStream.writeInt(packet.getData().length);
-        dataOutputStream.write(packet.getData());
     }
 }

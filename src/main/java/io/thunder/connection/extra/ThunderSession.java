@@ -55,14 +55,14 @@ public interface ThunderSession {
      *
      * @return Channel of Session
      */
-    Channel getChannel();
+    ThunderChannel getChannel();
 
     /**
-     * Sets the {@link Channel} of this {@link ThunderSession}
+     * Sets the {@link ThunderChannel} of this {@link ThunderSession}
      *
      * @param channel the Channel of this Session
      */
-    void setChannel(Channel channel);
+    void setChannel(ThunderChannel channel);
 
     /**
      * Checks if the {@link ThunderSession} is connected

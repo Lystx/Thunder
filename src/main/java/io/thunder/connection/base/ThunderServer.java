@@ -4,10 +4,11 @@ package io.thunder.connection.base;
 import io.thunder.Thunder;
 import io.thunder.connection.ThunderConnection;
 import io.thunder.connection.extra.ThunderSession;
-import io.thunder.manager.packet.Packet;
-import io.thunder.manager.utils.ThunderAction;
+import io.thunder.packet.Packet;
+import io.thunder.utils.ThunderAction;
 
 import java.net.ServerSocket;
+import java.util.List;
 
 /**
  * This is the class for the {@link ThunderServer}
@@ -25,6 +26,8 @@ public interface ThunderServer extends ThunderConnection {
     static ThunderServer newInstance() {
         return Thunder.createServer();
     }
+
+    List<ThunderClient> getClients();
 
     /**
      * Starts the Server on a given port

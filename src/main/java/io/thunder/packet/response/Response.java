@@ -1,4 +1,4 @@
-package io.thunder.manager.packet.response;
+package io.thunder.packet.response;
 
 import io.vson.elements.object.VsonObject;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package io.thunder.manager.packet.response;
+package io.thunder.packet.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

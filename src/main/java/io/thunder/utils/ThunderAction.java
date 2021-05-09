@@ -1,4 +1,4 @@
-package io.thunder.manager.utils;
+package io.thunder.utils;
 
 
 import java.util.function.Consumer;

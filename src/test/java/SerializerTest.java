@@ -1,4 +1,4 @@
-import io.thunder.manager.utils.Serializer;
+import io.thunder.utils.Serializer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

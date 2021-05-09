@@ -1,6 +1,6 @@
-package io.thunder.manager.packet.handler;
+package io.thunder.packet.handler;
 
-import io.thunder.manager.packet.Packet;
+import io.thunder.packet.Packet;
 
 /**
  * This Interface is used to handle

@@ -1,12 +1,13 @@
 import io.thunder.Thunder;
+import io.thunder.codec.PacketCodec;
+import io.thunder.codec.PacketDecoder;
+import io.thunder.codec.PacketEncoder;
 import io.thunder.connection.ThunderConnection;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
 import io.thunder.connection.extra.ThunderListener;
-import io.thunder.manager.packet.Packet;
-import io.thunder.manager.packet.handler.PacketHandler;
-import io.thunder.manager.packet.response.Response;
-import io.thunder.manager.packet.response.ResponseStatus;
+import io.thunder.packet.Packet;
+import io.thunder.packet.PacketBuffer;
 
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -19,7 +20,7 @@ public class ConnectionTest {
         ThunderServer thunderServer = Thunder.createServer(new ThunderListener() {
             @Override
             public void handlePacket(Packet packet, ThunderConnection thunderConnection) throws IOException {
-                System.out.println(packet.toString());
+                System.out.println("[" + System.currentTimeMillis() + "] " + packet.toString());
             }
 
             @Override
@@ -32,16 +33,18 @@ public class ConnectionTest {
 
             }
         });
-        ThunderClient thunderClient = Thunder.createClient();
 
+
+        ThunderClient thunderClient = Thunder.createClient();
 
         thunderServer.start(1401).perform();
 
         thunderClient.connect("127.0.0.1", 1401).perform(new Consumer<ThunderClient>() {
             @Override
             public void accept(ThunderClient thunderClient) {
+                System.out.println("[" + System.currentTimeMillis() + "] " + "Started");
                 SamplePacket samplePacket = new SamplePacket("Jonas", 10);
-                thunderClient.sendPacket(samplePacket);
+                thunderClient.getChannel().processOut(samplePacket);
             }
         });
     }

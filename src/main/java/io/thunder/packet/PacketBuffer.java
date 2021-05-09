@@ -1,6 +1,6 @@
 
 
-package io.thunder.manager.packet;
+package io.thunder.packet;
 
 import io.thunder.Thunder;
 import io.thunder.manager.logger.LogLevel;

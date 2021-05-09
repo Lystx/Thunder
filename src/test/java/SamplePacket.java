@@ -1,7 +1,5 @@
-import io.thunder.connection.ThunderConnection;
-import io.thunder.manager.packet.Packet;
-import io.thunder.manager.packet.PacketBuffer;
-import io.thunder.manager.packet.response.ResponseStatus;
+import io.thunder.packet.Packet;
+import io.thunder.packet.PacketBuffer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -23,8 +21,4 @@ public class SamplePacket extends Packet {
         age = buf.readInt();
     }
 
-    @Override
-    public void handle(ThunderConnection thunderConnection) {
-        respond(ResponseStatus.SUCCESS, "Das");
-    }
 }

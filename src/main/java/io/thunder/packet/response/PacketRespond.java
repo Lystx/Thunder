@@ -1,7 +1,7 @@
-package io.thunder.manager.packet.response;
+package io.thunder.packet.response;
 
-import io.thunder.manager.packet.Packet;
-import io.thunder.manager.packet.PacketBuffer;
+import io.thunder.packet.Packet;
+import io.thunder.packet.PacketBuffer;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
