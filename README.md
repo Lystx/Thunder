@@ -24,3 +24,15 @@ The ThunderConnection has its own unique Session to identify it.
 You can get it by using ThunderConnection#getSession() 
 
 ---------
+
+## ThunderServer:
+
+You can create a ThunderServer as the following.
+The Server is used to handle all Connections (ThunderClients).
+
+```Java
+
+```
+
+
+---------
