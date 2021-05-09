@@ -19,5 +19,6 @@ Content:
 ## Basics:
 
 The ThunderServer and the ThunderClient are based on the ThunderConnection
-
+The ThunderConnection has its own unique Session to identify it.
+You can get it by using ThunderConnection#getSession() 
 ---------
