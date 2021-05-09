@@ -32,6 +32,9 @@ The Server is used to handle all Connections (ThunderClients).
 
 ```Java
 
+ThunderServer thunderServer = Thunder.createServer();
+thunderServer.start(1401).perform();
+
 ```
 
 
