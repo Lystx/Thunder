@@ -15,6 +15,7 @@ Content:
 - ThunderClient (#client)
 - ThunderListener (#listener)
 - Packets (#packets)
+- PacketHandling (#handler)
 - Response System (#response)
 
 ---------
@@ -153,3 +154,47 @@ thunderConnection.addPacketHandler(new PacketHandler() {
 ```
 
 ---------
+
+## Response System:
+
+The PacketSystem takes advantage of a Response-based System.
+You can await for a Response when sending a Packet.
+You can respond to a Packet with a ResponseStatus and/or a Message.
+
+An example could look like this:
+
+(Waiting for the Response with Consumer)
+```Java
+
+thunderConnection.sendPacket(new SamplePacket("Luca", 16), new Consumer<Response>() {
+      @Override
+      public void accept(Response response) {
+          System.out.println(response.getStatus() + " - " + response.getMessage() + " [" + response.getProcessingTime() + "ms]");
+      }
+  });
+
+```
+
+(Waiting for the Response without Consumer)
+```Java
+
+SamplePacket samplePacket = new SamplePacket("Name", 16);
+Response response = thunderConnection.transferToResponse(samplePacket);
+System.out.println(response.getStatus() + " - " + response.getMessage());
+
+```
+
+(Responding to the Packet)
+```Java
+
+thunderConnection.addPacketHandler(new PacketHandler() {
+       @Override
+       public void handle(ThunderPacket packet) {
+           //Check if packet is SamplePacket
+           if (packet instanceof SamplePacket) {
+             packet.respond(ResponseStatus.SUCCESS, "Test Message");
+          }
+      }
+  });
+
+```
