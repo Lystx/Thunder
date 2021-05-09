@@ -95,7 +95,25 @@ An example Packet could look like the following:
 
 ```Java
 
+@Getter @AllArgsConstructor
+public class SamplePacket extends Packet {
 
+    private String name;
+    private int age;
+
+    @Override
+    public void write(PacketBuffer buf) {
+        buf.writeString(name);
+        buf.writeInt(age);
+    }
+
+    @Override
+    public void read(PacketBuffer buf) {
+        name = buf.readString();
+        age = buf.readInt();
+    }
+
+}
 
 ```
 
