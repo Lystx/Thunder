@@ -18,5 +18,6 @@ Content:
 
 ## Basics:
 
+The ThunderServer and the ThunderClient are based on the ThunderConnection
 
 ---------
