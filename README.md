@@ -117,4 +117,39 @@ public class SamplePacket extends Packet {
 
 ```
 
+The attributes inside of a Packet must be read and written from or into the PacketBuffer.
+A Packet can be send through a ThunderConnection.
+
+```Java
+
+SamplePacket samplePacket = new SamplePacket("Name", 32);
+thunderConnection.sendPackrt(samplePacket);
+
+```
+
+---------
+
+## PacketHandling:
+
+When receiving Packets from a different ThunderConnection you can handle the received Packet
+with the integrated PacketAdapter and register a PacketHandler to handle the Packet.
+
+```Java
+
+thunderConnection.addPacketHandler(new PacketHandler() {
+       @Override
+       public void handle(ThunderPacket packet) {
+           //Check if packet is SamplePacket
+           if (packet instanceof SamplePacket) {
+              SamplePacket samplePacket = (SamplePacket) packet;
+              System.out.println(samplePacket.getAge());
+              System.out.println(samplePacket.getName());
+              System.out.println(samplePacket.getProcessingTime() + "ms"); //The time the packet took
+              System.out.println(samplePacket.toString()); //Information on the Packet
+          }
+      }
+  });
+
+```
+
 ---------
