@@ -13,6 +13,9 @@ Content:
 - Basics (#basics)
 - ThunderServer (#server)
 - ThunderClient (#client)
+- ThunderListenet (#listener)
+- Packets (#packets)
+- Response System (#response)
 
 ---------
 
@@ -37,5 +40,16 @@ thunderServer.start(1401).perform();
 
 ```
 
+
+---------
+
+## ThunderClient:
+
+```Java
+
+ThunderClient thunderClient = Thunder.createClient();
+thunderClient.connect("127.0.0.1", 1401).perform();
+
+```
 
 ---------
