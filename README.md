@@ -83,3 +83,20 @@ ThunderServer thunderServer = Thunder.createServer(new ThunderListener() {
 ```
 
 ---------
+
+## Packets:
+
+Packets are the objects that contain the data which is getting transferred between ThunderConnections.
+Packet.class is abstract and contains two default methods.
+Packet#write(PacketBuffer) and Packet#read(PacketBuffer).
+
+Every Packet has its own UUID, a protocolVersion, a protocolId, and other values.
+An example Packet could look like the following:
+
+```Java
+
+
+
+```
+
+---------
