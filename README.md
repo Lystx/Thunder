@@ -13,7 +13,7 @@ Content:
 - Basics (#basics)
 - ThunderServer (#server)
 - ThunderClient (#client)
-- ThunderListenet (#listener)
+- ThunderListener (#listener)
 - Packets (#packets)
 - Response System (#response)
 
@@ -53,5 +53,19 @@ ThunderClient thunderClient = Thunder.createClient();
 thunderClient.connect("127.0.0.1", 1401).perform();
 
 ```
+
+---------
+
+## ThunderListener:
+
+The ThunderListener implements three methods to listen for events.
+The Listener can be add to a ThunderConnection (so either ThunderClient or ThunderServer)
+
+```Java
+
+
+
+```
+
 
 ---------
