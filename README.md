@@ -45,6 +45,8 @@ thunderServer.start(1401).perform();
 
 ## ThunderClient:
 
+The ThunderClient connects to the ThunderServer and transfers data from one connection to another.
+
 ```Java
 
 ThunderClient thunderClient = Thunder.createClient();
