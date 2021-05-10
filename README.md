@@ -10,7 +10,7 @@ Thunder is thread safe and supports Compression of Packets.
 
 Content:
 
-- Basics (#basics)
+- Basics (#Basics)
 - ThunderServer (#server)
 - ThunderClient (#client)
 - ThunderListener (#listener)
