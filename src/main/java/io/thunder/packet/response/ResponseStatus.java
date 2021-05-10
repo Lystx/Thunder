@@ -11,20 +11,33 @@ import lombok.Getter;
 @AllArgsConstructor @Getter
 public enum ResponseStatus {
 
+    /**
+     * Everything went good
+     */
     SUCCESS(0x00),
+
+    /**
+     * The operation has failed
+     */
     FAILED(0x40),
+
+    /**
+     * You are not allowed
+     * to perform a given action
+     */
     FORBIDDEN(0x42),
+
+    /**
+     * There was a conflic
+     */
     CONFLICT(0x43),
-    NOT_FOUND(0x44),
-    INTERNAL_ERROR(0x81, true),
-    BAD_REQUEST(0x82, true);
+
+    /**
+     * Something was not found
+     */
+    NOT_FOUND(0x44);
 
     @Getter
     private final int id;
-    private final boolean critically;
-
-    ResponseStatus(int id) {
-        this(id, false);
-    }
 
 }

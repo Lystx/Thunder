@@ -13,10 +13,18 @@ public class Serializer<T> {
 
     private final T object;
 
+    /**
+     * Sets object to null
+     */
     public Serializer() {
         this(null);
     }
 
+    /**
+     * Serializes an Object into a String
+     *
+     * @return object converted to String
+     */
     public String serialize() {
         try {
             ByteArrayOutputStream bo = new ByteArrayOutputStream();
@@ -30,6 +38,12 @@ public class Serializer<T> {
         return null;
     }
 
+    /**
+     * Deserializes an Object from a given input String
+     *
+     * @param s the input
+     * @return object
+     */
     public T deserialize(String s) {
         try {
             byte[] b = Base64.decode(s.getBytes());

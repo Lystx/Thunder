@@ -7,15 +7,16 @@ import io.thunder.connection.base.ThunderChannel;
 import io.thunder.manager.logger.LogLevel;
 import io.thunder.manager.logger.Logger;
 import io.thunder.packet.response.PacketRespond;
+import io.thunder.packet.response.Response;
 import io.thunder.packet.response.ResponseStatus;
 import io.vson.annotation.other.Vson;
+import io.vson.elements.object.VsonObject;
 import io.vson.enums.FileFormat;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.net.InetSocketAddress;
 import java.util.*;
-
 
 /**
  * This is class is the better usage
@@ -132,13 +133,15 @@ public abstract class Packet {
         //Copies the packet 1:1
         packet.setUniqueId(this.uniqueId);
         packet.setChannel(this.channel);
+        packet.setConnection(this.connection);
         packet.setData(this.data);
         packet.setProtocolId(this.protocolId);
         packet.setProtocolVersion(this.protocolVersion);
         packet.setProcessingTime(this.processingTime);
 
         //Sends the packet over the connection of this Packet
-        packet.getConnection().sendPacket(packet);
+        this.channel.processOut(packet);
+
     }
 
     /**
@@ -167,8 +170,14 @@ public abstract class Packet {
      * @param status the status you want to respond
      * @param object the object you want to respond
      */
-    public void respond(ResponseStatus status, Object object) {
-        this.respond(status, Vson.get().parse(object).toString(FileFormat.RAW_JSON));
+    public void respond(ResponseStatus status, Object... object) {
+
+        VsonObject vsonObject = new VsonObject();
+        for (int i = 0; i < object.length; i++) {
+            vsonObject.append(String.valueOf(i), object[i]);
+        }
+
+        this.respond(status, vsonObject.toString(FileFormat.RAW_JSON));
     }
 
     @Override

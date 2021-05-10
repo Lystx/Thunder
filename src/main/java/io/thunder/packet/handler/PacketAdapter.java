@@ -12,6 +12,9 @@ import java.util.List;
  */
 public class PacketAdapter {
 
+    /**
+     * The list of the registered {@link PacketHandler}s
+     */
     private final List<PacketHandler> packetHandlers;
 
     /**

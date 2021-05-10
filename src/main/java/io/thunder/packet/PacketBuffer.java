@@ -11,6 +11,7 @@ import lombok.SneakyThrows;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -208,7 +209,7 @@ public class PacketBuffer {
      * @return current PacketBuffer
      */
     public synchronized PacketBuffer writeEnum(Enum<?> e) {
-        return this.writeVarInt(e.ordinal());
+        return this.writeString(e.name());
     }
 
     /**
@@ -298,7 +299,7 @@ public class PacketBuffer {
      * @return The enum object
      */
     public <T extends Enum<T>> T readEnum(Class<T> enumClass) {
-        return enumClass.getEnumConstants()[this.readVarInt()];
+        return Enum.valueOf(enumClass, readString());
     }
 
     /**
