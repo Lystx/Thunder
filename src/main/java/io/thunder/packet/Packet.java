@@ -33,19 +33,19 @@ public abstract class Packet {
      * to get sent from
      * Server <--> Client
      */
-    private long processingTime;
+    protected long processingTime;
 
     /**
      * The data of this packet
      * It stores all data
      */
-    private byte[] data = new byte[9999];
+    protected byte[] data = new byte[9999];
 
     /**
      * The Unique ID of this packet
      * Used for identifying this Packet
      */
-    private UUID uniqueId = UUID.randomUUID();
+    protected UUID uniqueId = UUID.randomUUID();
 
 
     /**
@@ -64,13 +64,13 @@ public abstract class Packet {
      * The connection that handles this
      * Packet over the whole time
      */
-    private ThunderConnection connection;
+    protected ThunderConnection connection;
 
     /**
      * The Channel of this Packet
      * that sends the Packet
      */
-    private ThunderChannel channel;
+    protected ThunderChannel channel;
 
     /**
      * Will be called when the packet is received and fully

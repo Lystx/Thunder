@@ -1,6 +1,7 @@
 package io.thunder.connection.extra;
 
 
+import io.thunder.connection.ThunderConnection;
 import io.thunder.connection.base.*;
 
 import java.nio.channels.Channel;
@@ -77,6 +78,30 @@ public interface ThunderSession {
      * @param b if it's authenticated or not
      */
     void setAuthenticated(boolean b);
+
+    /**
+     * Returns the {@link ThunderConnection}
+     * of this given {@link ThunderConnection}
+     *
+     * @return connection of session
+     */
+    ThunderConnection getConnection();
+
+    /**
+     * Disconnects the Session
+     * using the {@link ThunderSession#getConnection()}
+     */
+    default void disconnect() {
+        this.getConnection().disconnect();
+    }
+
+    /**
+     * Checks if Session is connected
+     * using the {@link ThunderSession#getConnection()}
+     */
+    default boolean isConnected() {
+        return this.getConnection().isConnected();
+    }
 
     /**
      * this is when the Session was started!

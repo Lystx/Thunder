@@ -74,8 +74,8 @@ public class Response {
      * @return transformed Object
      */
     @SneakyThrows
-    public <T> T transform(String key, Class<T> tClass) {
-        return new VsonObject(this.message).getObject(key, tClass);
+    public <T> T transform(int position, Class<T> tClass) {
+        return new VsonObject(this.message).getObject(String.valueOf(position), tClass);
     }
 
 

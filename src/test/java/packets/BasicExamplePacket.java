@@ -1,25 +1,25 @@
+package packets;
+
 import io.thunder.packet.Packet;
 import io.thunder.packet.PacketBuffer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.UUID;
-
 @Getter @AllArgsConstructor
-public class PacketDatabase extends Packet {
+public class BasicExamplePacket extends Packet {
 
-    private String database;
-    private UUID uuid;
+    private String name;
+    private int age;
 
     @Override
     public void write(PacketBuffer buf) {
-        buf.writeString(database);
-        buf.writeUUID(uuid);
+        buf.writeString(name);
+        buf.writeInt(age);
     }
 
     @Override
     public void read(PacketBuffer buf) {
-        database = buf.readString();
-        uuid = buf.readUUID();
+        name = buf.readString();
+        age = buf.readInt();
     }
 }

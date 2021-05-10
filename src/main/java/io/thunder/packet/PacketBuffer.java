@@ -2,26 +2,23 @@
 
 package io.thunder.packet;
 
-import io.thunder.Thunder;
-import io.thunder.manager.logger.LogLevel;
+import com.google.gson.JsonIOException;
+import io.vson.VsonValue;
 import io.vson.annotation.other.Vson;
+import io.vson.enums.FileFormat;
 import io.vson.manage.vson.VsonParser;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 /**
- * This class is used to build
- *
- * You can write what you want in the packet
- * with the differnt methods down below
- * and then build it together
- * */
+ * This class is used to read and write values to a {@link Packet}
+ */
 @Getter
 public class PacketBuffer {
 
@@ -39,59 +36,47 @@ public class PacketBuffer {
     /**
      * Writes a String into the packet
      * @param s the text
-     * @return current PacketBuffer
      */
-    public synchronized PacketBuffer writeString(String s) {
-        return this.writeBytes(s.getBytes(StandardCharsets.UTF_8));
+    public synchronized void writeString(String s) {
+        this.writeBytes(s.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
      * Writes bytes into the packet
      * @param b the byte-array
-     * @return current PacketBuffer
      */
     @SneakyThrows
-    public synchronized PacketBuffer writeBytes(byte[] b) {
+    public synchronized void writeBytes(byte[] b) {
         dataOutputStream.writeInt(b.length);
         dataOutputStream.write(b);
-        return this;
     }
 
     /**
      * Writes a Boolean into the packet
      * @param b the boolean
-     * @return current PacketBuffer
      */
     @SneakyThrows
-    public synchronized PacketBuffer writeBoolean(boolean b) {
+    public synchronized void writeBoolean(boolean b) {
         dataOutputStream.writeBoolean(b);
-        return this;
     }
 
     /**
      * Writes a Long into the packet
      * @param l the long
-     * @return current PacketBuffer
      */
     @SneakyThrows
-    public synchronized PacketBuffer writeLong(long l) {
+    public synchronized void writeLong(long l) {
         dataOutputStream.writeLong(l);
-        return this;
     }
 
     /**
      * Writes a uniqueId to the buffer
      *
      * @param uuid The uuid
-     * @return This
      */
-    public PacketBuffer writeUUID(UUID uuid) {
-        if (uuid == null) {
-            return this;
-        }
+    public synchronized void writeUUID(UUID uuid) {
         this.writeLong(uuid.getMostSignificantBits());
         this.writeLong(uuid.getLeastSignificantBits());
-        return this;
     }
 
     /**
@@ -103,7 +88,7 @@ public class PacketBuffer {
      *
      * @param objects the Object(s)
      */
-    public void write(Object... objects) {
+    public synchronized void write(Object... objects) {
         for (Object o : objects) {
             if (o.getClass().equals(Integer.class) || o.getClass().equals(int.class)) {
                 this.writeInt((Integer) o);
@@ -113,9 +98,9 @@ public class PacketBuffer {
                 this.writeString((String) o);
             } else if (o.getClass().equals(Boolean.class) || o.getClass().equals(boolean.class)) {
                 this.writeBoolean((Boolean) o);
-            } else if (o.getClass().equals(UUID.class)) {
+            } else if (o instanceof UUID) {
                 this.writeUUID((UUID) o);
-            } else if (o.getClass().equals(Enum.class)) {
+            } else if (o instanceof Enum) {
                 this.writeEnum((Enum<?>) o);
             } else if (o instanceof List) {
                 final List<?> o1 = (List<?>) o;
@@ -123,7 +108,7 @@ public class PacketBuffer {
                     return;
                 }
                 if (o1.get(0) instanceof String) {
-                    this.writeList((List<String>) o1);
+                    this.writeList(o1);
                 }
             } else {
                 this.writeObject(o);
@@ -134,123 +119,106 @@ public class PacketBuffer {
     /**
      * Writes an Integer into the packet
      * @param i the int
-     * @return current PacketBuffer
      */
     @SneakyThrows
-    public synchronized PacketBuffer writeInt(int i) {
+    public synchronized void writeInt(int i) {
         dataOutputStream.writeInt(i);
-        return this;
     }
 
     /**
      * Writes a Float into the packet
      * @param f the float
-     * @return current PacketBuffer
      */
     @SneakyThrows
-    public synchronized PacketBuffer writeFloat(float f) {
+    public synchronized void writeFloat(float f) {
         dataOutputStream.writeFloat(f);
-        return this;
     }
 
     /**
      * Writes a Double into the packet
      * @param d the double
-     * @return current PacketBuffer
      */
     @SneakyThrows
-    public synchronized PacketBuffer writeDouble(double d) {
+    public synchronized void writeDouble(double d) {
         dataOutputStream.writeDouble(d);
-        return this;
     }
 
     /**
      * Writes a single Byte into the packet
      * @param b the byte
-     * @return current PacketBuffer
      */
     @SneakyThrows
-    public synchronized PacketBuffer writeByte(byte b) {
+    public synchronized void writeByte(byte b) {
         dataOutputStream.writeByte(b);
-        return this;
     }
 
     /**
      * Writes a Short into the packet
      * @param s the short
-     * @return current PacketBuffer
      */
     @SneakyThrows
-    public synchronized PacketBuffer writeShort(short s) {
+    public synchronized void writeShort(short s) {
         dataOutputStream.writeShort(s);
-        return this;
     }
 
     /**
      * Writes var int to buffer
      *
      * @param input the input
-     * @return current PacketBuffer
      */
-    public synchronized PacketBuffer writeVarInt(int input) {
+    public synchronized void writeVarInt(int input) {
         while((input & -128) != 0){
             this.writeInt(input & 127 | 128);
             input >>>= 7;
         }
 
         this.writeInt(input);
-        return this;
     }
 
     /**
      * Writes a Enum to buffer
      *
      * @param e the enum
-     * @return current PacketBuffer
      */
-    public synchronized PacketBuffer writeEnum(Enum<?> e) {
-        return this.writeString(e.name());
+    public synchronized void writeEnum(Enum<?> e) {
+        this.writeString(e.name());
     }
 
     /**
      * Writes a stringList into the database
      *
      * @param list the list
-     * @return current PacketBuffer
      */
-    public PacketBuffer writeList(List<?> list) {
+    public synchronized void writeList(List<?> list) {
         this.writeVarInt(list.size());
         list.forEach(o -> this.writeString(o.toString()));
-        return this;
     }
 
     /**
      * Writes an Object into the packet
-     * @param o the Object
-     * @return current PacketBuffer
+     * @param object the Object
      */
-    @Deprecated
-    public synchronized PacketBuffer writeObject(Object o) {
-        return this.writeString(Vson.get().parse(o).toString());
+    public synchronized void writeObject(Object object) {
+        this.writeString(object.getClass().getName());
+        VsonValue parse = Vson.get().parse(object);
+        this.writeString(parse.toString(FileFormat.RAW_JSON));
     }
 
     /**
-     * This will build
-     * together and closes the {@link DataOutputStream}
+     * Writes all the Fields of the Class into the {@link PacketBuffer}
+     * automatically (Might choose the wrong write Option)
+     * So its always better to do it manually!
      *
-     * @return the built Packet
+     * @param classObject the object of the class Mostly [ buf.writeClass(this) ]
      */
-    public synchronized byte[] build() {
-
-        try {
-            dataOutputStream.close();
-        } catch (IOException e) {
-            Thunder.LOGGER.log(LogLevel.ERROR, "Packet couldn't be built (" + getClass().getSimpleName() + ")");
+    @SneakyThrows
+    public synchronized void writeClass(Object classObject) {
+        for (Field declaredField : classObject.getClass().getDeclaredFields()) {
+            declaredField.setAccessible(true);
+            Object o = declaredField.get(classObject);
+            this.write(o);
         }
-
-        return byteArrayOutputStream.toByteArray();
     }
-
 
     private Packet packet;
     private DataInputStream dataInputStream;
@@ -272,11 +240,11 @@ public class PacketBuffer {
      *
      * @return int
      */
-    public int readVarInt() {
+    public synchronized int readVarInt() {
         int i = 0;
         int j = 0;
 
-        while(true){
+        while (true) {
             byte b0 = this.readByte();
             i |= (b0 & 127) << j++ * 7;
 
@@ -298,7 +266,7 @@ public class PacketBuffer {
      * @param <T>       The enum type
      * @return The enum object
      */
-    public <T extends Enum<T>> T readEnum(Class<T> enumClass) {
+    public synchronized <T extends Enum<T>> T readEnum(Class<T> enumClass) {
         return Enum.valueOf(enumClass, readString());
     }
 
@@ -307,12 +275,14 @@ public class PacketBuffer {
      * @return byte array
      */
     @SneakyThrows
-    public byte[] readBytes() {
-        final int dataLength = dataInputStream.readInt();
-        final byte[] data = new byte[dataLength];
+    public synchronized byte[] readBytes() {
+        int dataLength = dataInputStream.readInt();
+        byte[] data = new byte[dataLength];
 
-        final int dataRead = dataInputStream.read(data, 0, dataLength);
-        if (dataRead != dataLength) throw new IOException("Not enough data available");
+        int dataRead = dataInputStream.read(data, 0, dataLength);
+        if (dataRead != dataLength) {
+            throw new IOException("Not enough data available");
+        }
         return data;
     }
 
@@ -320,7 +290,7 @@ public class PacketBuffer {
      * Reads the current UUID
      * @return current UUID
      */
-    public UUID readUUID() {
+    public synchronized UUID readUUID() {
         return new UUID(readLong(), readLong());
     }
 
@@ -328,7 +298,7 @@ public class PacketBuffer {
      * Reads the current String
      * @return current String
      */
-    public String readString() {
+    public synchronized String readString() {
         return new String(this.readBytes(), StandardCharsets.UTF_8);
     }
 
@@ -337,7 +307,7 @@ public class PacketBuffer {
      * @return current byte
      */
     @SneakyThrows
-    public byte readByte() {
+    public synchronized byte readByte() {
         return dataInputStream.readByte();
     }
 
@@ -346,7 +316,7 @@ public class PacketBuffer {
      * @return current boolean
      */
     @SneakyThrows
-    public boolean readBoolean() {
+    public synchronized boolean readBoolean() {
         return dataInputStream.readBoolean();
     }
 
@@ -355,7 +325,7 @@ public class PacketBuffer {
      * @return current int
      */
     @SneakyThrows
-    public int readInt() {
+    public synchronized int readInt() {
         return dataInputStream.readInt();
     }
 
@@ -364,7 +334,7 @@ public class PacketBuffer {
      * @return current long
      */
     @SneakyThrows
-    public long readLong() {
+    public synchronized long readLong() {
         return dataInputStream.readLong();
     }
 
@@ -373,7 +343,7 @@ public class PacketBuffer {
      * @return current double
      */
     @SneakyThrows
-    public double readDouble() {
+    public synchronized double readDouble() {
         return dataInputStream.readDouble();
     }
 
@@ -382,7 +352,7 @@ public class PacketBuffer {
      * @return current float
      */
     @SneakyThrows
-    public float readFloat() {
+    public synchronized float readFloat() {
         return dataInputStream.readFloat();
     }
 
@@ -391,7 +361,7 @@ public class PacketBuffer {
      * @return current short
      */
     @SneakyThrows
-    public short readShort() {
+    public synchronized short readShort() {
         return dataInputStream.readShort();
     }
 
@@ -400,18 +370,10 @@ public class PacketBuffer {
      * @return current char
      */
     @SneakyThrows
-    public char readChar() {
+    public synchronized char readChar() {
         return dataInputStream.readChar();
     }
 
-    /**
-     * Reads the current UTF
-     * @return current UTF
-     */
-    @SneakyThrows
-    public String readUTF() {
-        return dataInputStream.readUTF();
-    }
 
     /**
      * This will read custom values
@@ -419,10 +381,38 @@ public class PacketBuffer {
      *
      * @return Object from Stream
      */
-    @Deprecated @SneakyThrows
-    public <T> T readObject(Class<T> objectClass) {
-        return Vson.get().unparse(new VsonParser(this.readString()).parse(), objectClass);
+    @SneakyThrows
+    public synchronized <T> T readObject() {
+        String objectClass = this.readString();
+        return Vson.get().unparse(new VsonParser(this.readString()).parse(), (Class<T>) Class.forName(objectClass));
     }
 
+    public synchronized Object read(String type) {
+        Object object;
+        if (type.equalsIgnoreCase("integer") || type.equalsIgnoreCase("int")) {
+            object = this.readInt();
+        } else if (type.equalsIgnoreCase("double")) {
+            object = this.readDouble();
+        } else if (type.equalsIgnoreCase("short")) {
+            object = this.readShort();
+        } else if (type.equalsIgnoreCase("long")) {
+            object = this.readLong();
+        } else if (type.equalsIgnoreCase("float")) {
+            object = this.readFloat();
+        } else if (type.equalsIgnoreCase("byte")) {
+            object = this.readByte();
+        } else if (type.equalsIgnoreCase("boolean")) {
+            object = this.readBoolean();
+        } else if (type.equalsIgnoreCase("uuid")) {
+            object = this.readUUID();
+        } else if (type.equalsIgnoreCase("char")) {
+            object = this.readChar();
+        } else if (type.equalsIgnoreCase("string")) {
+            object = this.readString();
+        } else {
+            object = readObject();
+        }
+        return object;
+    }
 
 }

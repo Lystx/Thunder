@@ -11,6 +11,7 @@ import io.thunder.connection.extra.ThunderSession;
 import io.thunder.packet.*;
 import io.thunder.packet.handler.PacketAdapter;
 import io.thunder.packet.handler.PacketHandler;
+import io.thunder.packet.object.ObjectHandler;
 import io.thunder.packet.response.PacketRespond;
 import io.thunder.packet.response.Response;
 import io.thunder.packet.response.ResponseStatus;
@@ -18,6 +19,7 @@ import io.thunder.packet.response.ResponseStatus;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -36,7 +38,22 @@ public interface ThunderConnection {
      *
      * @param serverListener the Listener to add
      */
-    void addHandler(ThunderListener serverListener);
+    void addSessionListener(ThunderListener serverListener);
+
+    /**
+     * Adds a {@link ObjectHandler} to the current
+     * Connection
+     *
+     * @param objectHandler the handler to add
+     */
+    void addObjectListener(ObjectHandler<?> objectHandler);
+
+    /**
+     * Returns all the registered {@link ObjectHandler}s
+     *
+     * @return list of handlers
+     */
+    List<ObjectHandler<?>> getObjectHandlers();
 
     /**
      * Sets the name of this {@link ThunderConnection}
@@ -52,6 +69,13 @@ public interface ThunderConnection {
      * @param packet the packet to send
      */
     void sendPacket(Packet packet);
+
+    /**
+     * Sends an Object to the other {@link ThunderConnection}s
+     *
+     * @param object the objects
+     */
+    void sendObject(Object object);
 
     default ThunderConnection addPacketHandler(PacketHandler packetHandler) {
         this.getPacketAdapter().addHandler(packetHandler);

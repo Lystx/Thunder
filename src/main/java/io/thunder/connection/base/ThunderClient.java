@@ -49,7 +49,6 @@ public interface ThunderClient extends ThunderConnection {
      */
     Socket getSocket();
 
-
     /**
      * Returns Information on this Client
      * @return

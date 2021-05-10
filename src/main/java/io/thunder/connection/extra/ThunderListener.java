@@ -2,10 +2,13 @@
 
 package io.thunder.connection.extra;
 
+import io.thunder.Thunder;
 import io.thunder.connection.ThunderConnection;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
+import io.thunder.manager.logger.LogLevel;
 import io.thunder.packet.*;
+import io.thunder.packet.object.PacketObject;
 import io.thunder.packet.response.PacketRespond;
 import lombok.SneakyThrows;
 
@@ -22,37 +25,17 @@ import java.lang.reflect.Constructor;
  */
 public interface ThunderListener {
 
+    /**
+     * Called when the {@link ThunderSession}
+     * connected successfully
+     */
+    void handleConnect(ThunderSession session);
 
     /**
-     * Called when a Packet gets handled
-     * This packet can be a raw {@link Packet}
-     *
-     * @param packet the received Packet
-     * @param thunderConnection the connection it came from (Server or Client)
-     * @throws IOException if something went wrong
+     * Called when the {@link ThunderSession}
+     * disconnected successfully
      */
-    void handlePacket(Packet packet, ThunderConnection thunderConnection) throws IOException;
-
-
-    /**
-     * Server:
-     *    -> Called when a Client connects to the server
-     *     @param thunderConnection > The client
-     * Client:
-     *    -> Called when connected to the server
-     *     @param thunderConnection > The Client itsself
-     */
-    void handleConnect(ThunderConnection thunderConnection);
-
-    /**
-     * Server:
-     *    -> Called when a Client disconnects from the server
-     *     @param thunderConnection > The client
-     * Client:
-     *    -> Called when disconnected from the server
-     *     @param thunderConnection > The Client
-     */
-    void handleDisconnect(ThunderConnection thunderConnection);
+    void handleDisconnect(ThunderSession session);
 
     /**
      * Handles a raw packet intern
@@ -62,16 +45,14 @@ public interface ThunderListener {
      */
     @SneakyThrows
     default void readPacket(Packet packet, ThunderConnection thunderConnection) throws IOException {
-
         Packet decodedPacket = thunderConnection.getDecoder().decode(packet, new PacketBuffer(packet), thunderConnection);
-
+        if (decodedPacket == null) {
+            Thunder.LOGGER.log(LogLevel.ERROR, "A Packet could not be decoded and was marked as null (Class: " + packet.getClass().getName() + ")");
+            return;
+        }
         decodedPacket.handle(thunderConnection);
         thunderConnection.getPacketAdapter().handle(decodedPacket);
 
-        if (decodedPacket instanceof PacketRespond) {
-            return;
-        }
-        this.handlePacket(decodedPacket, thunderConnection); //Then handling the ready built packet
     }
 
 
