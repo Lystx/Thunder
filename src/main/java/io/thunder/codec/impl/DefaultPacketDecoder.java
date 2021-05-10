@@ -46,6 +46,7 @@ public class DefaultPacketDecoder extends PacketDecoder {
             //Setting values
             bufferedPacket.setProcessingTime(System.currentTimeMillis() - packet.getProcessingTime());
             bufferedPacket.setConnection(thunderConnection);
+            bufferedPacket.setChannel(thunderConnection.getChannel());
             bufferedPacket.setUniqueId(packet.getUniqueId());
             bufferedPacket.setProtocolId(packet.getProtocolId());
             bufferedPacket.setProtocolVersion(packet.getProtocolVersion());

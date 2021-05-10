@@ -20,7 +20,7 @@ public class ConnectionTest {
         ThunderServer thunderServer = Thunder.createServer(new ThunderListener() {
             @Override
             public void handlePacket(Packet packet, ThunderConnection thunderConnection) throws IOException {
-                System.out.println("[" + System.currentTimeMillis() + "] " + packet.toString());
+                System.out.println(packet.getProcessingTime() + "ms");
             }
 
             @Override
@@ -42,9 +42,9 @@ public class ConnectionTest {
         thunderClient.connect("127.0.0.1", 1401).perform(new Consumer<ThunderClient>() {
             @Override
             public void accept(ThunderClient thunderClient) {
-                System.out.println("[" + System.currentTimeMillis() + "] " + "Started");
                 SamplePacket samplePacket = new SamplePacket("Jonas", 10);
-                thunderClient.getChannel().processOut(samplePacket);
+                samplePacket.sendAndFlush(thunderClient.getChannel());
+
             }
         });
     }

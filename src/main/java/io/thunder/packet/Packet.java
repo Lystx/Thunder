@@ -1,7 +1,11 @@
 package io.thunder.packet;
 
 
+import io.thunder.Thunder;
 import io.thunder.connection.ThunderConnection;
+import io.thunder.connection.base.ThunderChannel;
+import io.thunder.manager.logger.LogLevel;
+import io.thunder.manager.logger.Logger;
 import io.thunder.packet.response.PacketRespond;
 import io.thunder.packet.response.ResponseStatus;
 import io.vson.annotation.other.Vson;
@@ -9,6 +13,7 @@ import io.vson.enums.FileFormat;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.net.InetSocketAddress;
 import java.util.*;
 
 
@@ -61,6 +66,12 @@ public abstract class Packet {
     private ThunderConnection connection;
 
     /**
+     * The Channel of this Packet
+     * that sends the Packet
+     */
+    private ThunderChannel channel;
+
+    /**
      * Will be called when the packet is received and fully
      * constructed.
      * This can also be used to call {@link Packet#respond(PacketRespond)}
@@ -88,6 +99,28 @@ public abstract class Packet {
      */
     public abstract void read(PacketBuffer buf);
 
+    /**
+     * Sends this {@link Packet} to the given {@link ThunderChannel}
+     *
+     * @param channel the channel to send it to
+     */
+    public void sendAndFlush(ThunderChannel channel) {
+        if (channel == null) {
+            Thunder.LOGGER.log(LogLevel.ERROR, "Could not Execute " + getClass().getSimpleName() + "#sendAndFlush because the Channel for the Packet is null!");
+            return;
+        }
+        this.channel = channel;
+        channel.processOut(this);
+        channel.flush();
+    }
+
+    /**
+     * Sends the {@link Packet} with this channel
+     * (Might be null at some point)
+     */
+    public void sendAndFlush() {
+        this.sendAndFlush(this.channel);
+    }
 
     /**
      * Respond to the packet with a {@link PacketRespond}
@@ -98,7 +131,7 @@ public abstract class Packet {
 
         //Copies the packet 1:1
         packet.setUniqueId(this.uniqueId);
-        packet.setConnection(this.connection);
+        packet.setChannel(this.channel);
         packet.setData(this.data);
         packet.setProtocolId(this.protocolId);
         packet.setProtocolVersion(this.protocolVersion);
@@ -142,4 +175,14 @@ public abstract class Packet {
     public String toString() {
         return "(Packet : [" + getClass().getSimpleName() + "] UUID : [" + getUniqueId() + "] ProtocolID : [" + getProtocolId() + "] ProtocolVersion: [" + getProtocolVersion() + "] Time : [" + getProcessingTime() + " ms] Data : [" + getData().length + " bytes])";
     }
+
+    /**
+     * Get the address of the channel
+     *
+     * @return The address
+     */
+    public InetSocketAddress getAddress() {
+        return (InetSocketAddress) getChannel().remoteAddress();
+    }
+
 }

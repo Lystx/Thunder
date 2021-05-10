@@ -15,12 +15,12 @@ public class DefaultPacketEncoder extends PacketEncoder {
         packet.write(buf);
         packet.setData(buf.build());
 
-        dataOutputStream.writeLong(System.currentTimeMillis());
         dataOutputStream.writeInt(packet.getProtocolId());
         dataOutputStream.writeInt(packet.getProtocolVersion());
         dataOutputStream.writeLong(packet.getUniqueId().getLeastSignificantBits());
         dataOutputStream.writeLong(packet.getUniqueId().getMostSignificantBits());
         dataOutputStream.writeInt(packet.getData().length);
         dataOutputStream.write(packet.getData());
+        dataOutputStream.writeLong(System.currentTimeMillis());
     }
 }

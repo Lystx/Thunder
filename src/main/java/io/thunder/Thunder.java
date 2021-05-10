@@ -25,9 +25,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
+import java.net.*;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -189,12 +187,12 @@ public class Thunder {
 
                 try {
 
-                    long time = dataInputStream.readLong();
                     int protocolId = dataInputStream.readInt();
                     int protocolVersion = dataInputStream.readInt();
                     UUID uniqueId = new UUID(dataInputStream.readLong(), dataInputStream.readLong());
                     int dataLength = dataInputStream.readInt();
                     byte[] data = new byte[dataLength]; dataInputStream.readFully(data);
+                    long time = dataInputStream.readLong();
 
 
                     packet = new Packet() {
@@ -563,13 +561,19 @@ public class Thunder {
 
         @Override @SneakyThrows
         public void processIn(Packet packet) {
+
+            packet.setChannel(thunderClient.getChannel());
             packet.setConnection(this.thunderClient);
+
             ThunderConnection.processOut(packet, this.getOut());
         }
 
         @Override @SneakyThrows
         public void processOut(Packet packet) {
+
+            packet.setChannel(this.thunderClient.getChannel());
             packet.setConnection(this.thunderClient);
+
             DataOutputStream out = this.getOut();
             ThunderConnection.processOut(packet, out);
             out.flush();
@@ -593,6 +597,16 @@ public class Thunder {
         @Override @SneakyThrows
         public DataInputStream getIn() {
             return new DataInputStream(this.thunderClient.getSocket().getInputStream());
+        }
+
+        @Override
+        public SocketAddress remoteAddress() {
+            return this.thunderClient.getSocket().getRemoteSocketAddress();
+        }
+
+        @Override
+        public SocketAddress localAddress() {
+            return this.thunderClient.getSocket().getLocalSocketAddress();
         }
 
         @Override
@@ -623,7 +637,10 @@ public class Thunder {
 
         @Override @SneakyThrows
         public void processOut(Packet packet) {
+
+            packet.setChannel(this.thunderServer.getChannel());
             packet.setConnection(this.thunderServer);
+
             for (ThunderClient client : this.thunderServer.getClients()) {
                 ThunderConnection.processOut(packet, new DataOutputStream(client.getSocket().getOutputStream()));
             }
@@ -631,7 +648,10 @@ public class Thunder {
 
         @Override @SneakyThrows
         public void processOut(Packet packet, ThunderChannel thunderChannel) {
+
+            packet.setChannel(this.thunderServer.getChannel());
             packet.setConnection(this.thunderServer);
+
             DataOutputStream dataOutputStream = thunderChannel.getOut();
             ThunderConnection.processOut(packet, dataOutputStream);
         }
@@ -653,7 +673,17 @@ public class Thunder {
             throw new UnsupportedOperationException("Not available for ThunderServer!");
         }
 
-         @Override
+        @Override
+        public SocketAddress remoteAddress() {
+            return new InetSocketAddress(this.thunderServer.getServer().getInetAddress().getHostName(), this.thunderServer.getServer().getLocalPort());
+        }
+
+        @Override
+        public SocketAddress localAddress() {
+            return this.thunderServer.getServer().getLocalSocketAddress();
+        }
+
+        @Override
          public ThunderSession getSession() {
              return this.thunderServer.getSession();
          }

@@ -7,6 +7,7 @@ import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.SocketAddress;
 
 public interface ThunderChannel extends Closeable {
 
@@ -56,6 +57,20 @@ public interface ThunderChannel extends Closeable {
      * @return DataInput
      */
     DataInputStream getIn();
+
+    /**
+     * This is the Remote Address of the Channel
+     *
+     * @return SocketAddress
+     */
+    SocketAddress remoteAddress();
+
+    /**
+     * This is the Local Address of the Channel
+     *
+     * @return SocketAddress
+     */
+    SocketAddress localAddress();
 
     /**
      * Returns the {@link ThunderSession}
