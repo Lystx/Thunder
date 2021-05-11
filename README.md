@@ -65,18 +65,14 @@ The Listener can be add to a ThunderConnection (so either ThunderClient or Thund
 ```Java
 
 ThunderServer thunderServer = Thunder.createServer(new ThunderListener() {
+ 
        @Override
-       public void handlePacket(Packet packet, ThunderConnection thunderConnection) throws IOException {
-           System.out.println(packet.toString());
-       }
-
-       @Override
-       public void handleConnect(ThunderConnection thunderConnection) {
+       public void handleConnect(ThunderSession session) {
 
        }
 
        @Override
-       public void handleDisconnect(ThunderConnection thunderConnection) {
+       public void handleDisconnect(ThunderSession session) {
 
        }
    });
@@ -124,7 +120,7 @@ A Packet can be send through a ThunderConnection.
 ```Java
 
 SamplePacket samplePacket = new SamplePacket("Name", 32);
-thunderConnection.sendPackrt(samplePacket);
+thunderConnection.sendPacket(samplePacket);
 
 ```
 
