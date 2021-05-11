@@ -194,4 +194,18 @@ public abstract class Packet {
         return (InetSocketAddress) getChannel().remoteAddress();
     }
 
+
+    public static Packet newInstance() {
+        return new Packet() {
+            @Override
+            public void write(PacketBuffer buf) {
+
+            }
+
+            @Override
+            public void read(PacketBuffer buf) {
+
+            }
+        };
+    }
 }

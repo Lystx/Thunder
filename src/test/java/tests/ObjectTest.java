@@ -4,6 +4,8 @@ import io.thunder.Thunder;
 import io.thunder.connection.base.ThunderChannel;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
+import io.thunder.connection.extra.ThunderListener;
+import io.thunder.connection.extra.ThunderSession;
 import io.thunder.manager.logger.LogLevel;
 import io.thunder.packet.Packet;
 import io.thunder.packet.handler.PacketHandler;
@@ -53,12 +55,8 @@ public class ObjectTest {
         thunderClient.connect("localhost", 1401).perform(new Consumer<ThunderClient>() { //Connecting client and accepting consumer
             @Override
             public void accept(ThunderClient client) {
-                ExampleObject exampleObject = new ExampleObject("YourName", UUID.randomUUID(), System.currentTimeMillis(), Arrays.asList("7434734", "z7fhasfu", "jkfnasjf", "uhrt78w4has"));
-                client.sendObject(exampleObject);
-
-
-                String message = "This is a test message and it works";
-                client.sendObject(message);
+                client.sendObject("Test String");
+                client.sendObject(new ExampleObject("Lystx", UUID.randomUUID(), System.currentTimeMillis(), Arrays.asList("a", "b", "c", "d", "e", "f")));
             }
         });
     }

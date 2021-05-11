@@ -3,8 +3,10 @@ package io.thunder;
 import io.thunder.codec.PacketCodec;
 import io.thunder.codec.PacketDecoder;
 import io.thunder.codec.PacketEncoder;
+import io.thunder.codec.PacketPreDecoder;
 import io.thunder.codec.impl.DefaultPacketDecoder;
 import io.thunder.codec.impl.DefaultPacketEncoder;
+import io.thunder.codec.impl.DefaultPacketPreDecoder;
 import io.thunder.connection.*;
 import io.thunder.connection.base.ThunderChannel;
 import io.thunder.connection.base.ThunderClient;
@@ -47,7 +49,7 @@ public class Thunder {
      *
      * @param logging the LogLevel
      */
-    public static void setLogging(LogLevel logging) {
+    public synchronized static void setLogging(LogLevel logging) {
         LOGGER.setLogLevel(logging);
     }
 
@@ -56,8 +58,16 @@ public class Thunder {
      *
      * @return the created Client
      */
-    public static ThunderClient createClient() {
-        return createClient(new EmptyThunderListener());
+    public synchronized static ThunderClient createClient() {
+        return createClient(new ThunderListener() {
+            @Override
+            public void handleConnect(ThunderSession session) {
+            }
+
+            @Override
+            public void handleDisconnect(ThunderSession session) {
+            }
+        });
     }
 
     /**
@@ -68,7 +78,7 @@ public class Thunder {
      * @param thunderListener
      * @return the created Client
      */
-    public static ThunderClient createClient(ThunderListener thunderListener) {
+    public synchronized static ThunderClient createClient(ThunderListener thunderListener) {
         ImplThunderClient implThunderClient = new ImplThunderClient(Socket::new);
         if (thunderListener != null) implThunderClient.addSessionListener(thunderListener);
         return implThunderClient;
@@ -82,8 +92,16 @@ public class Thunder {
      *
      * @return created Server
      */
-    public static ThunderServer createServer() {
-        return createServer(new EmptyThunderListener());
+    public synchronized static ThunderServer createServer() {
+        return createServer(new ThunderListener() {
+            @Override
+            public void handleConnect(ThunderSession session) {
+            }
+
+            @Override
+            public void handleDisconnect(ThunderSession session) {
+            }
+        });
     }
 
     /**
@@ -93,7 +111,7 @@ public class Thunder {
      * @param thunderListener the Listener
      * @return created Server
      */
-    public static ThunderServer createServer(ThunderListener thunderListener) {
+    public synchronized static ThunderServer createServer(ThunderListener thunderListener) {
         ImplThunderServer implThunderServer = new ImplThunderServer(ServerSocket::new, () -> new ImplThunderClient(Socket::new));
         if (thunderListener != null) implThunderServer.addSessionListener(thunderListener);
         return implThunderServer;
@@ -117,6 +135,7 @@ public class Thunder {
 
         private PacketEncoder encoder = new DefaultPacketEncoder();
         private PacketDecoder decoder = new DefaultPacketDecoder();
+        private PacketPreDecoder preDecoder = new DefaultPacketPreDecoder();
 
         private ThunderListener thunderListener;
         private final List<ObjectHandler<?>> objectHandlers;
@@ -132,7 +151,7 @@ public class Thunder {
 
 
         @Override
-        public void setName(String name) {
+        public synchronized void setName(String name) {
             this.session.setSessionId(name);
         }
 
@@ -142,7 +161,7 @@ public class Thunder {
         }
 
         @Override
-        public void addObjectListener(ObjectHandler<?> objectHandler) {
+        public synchronized void addObjectListener(ObjectHandler<?> objectHandler) {
             this.objectHandlers.add(objectHandler);
         }
 
@@ -181,37 +200,13 @@ public class Thunder {
                 LOGGER.log(LogLevel.DEBUG, "(Client-Side) ThunderClient-Listener-Thread starting...");
                 while (this.isConnected()) {
                     Packet packet;
-
                     try {
-
-                        int protocolId = dataInputStream.readInt();
-                        int protocolVersion = dataInputStream.readInt();
-                        UUID uniqueId = new UUID(dataInputStream.readLong(), dataInputStream.readLong());
-                        int dataLength = dataInputStream.readInt();
-                        byte[] data = new byte[dataLength]; dataInputStream.readFully(data);
-                        long time = dataInputStream.readLong();
-
-
-                        packet = new Packet() {
-                            @Override
-                            public void write(PacketBuffer buf) {}
-
-                            @Override
-                            public void read(PacketBuffer buf) {}
-                        };
-
-
-                        packet.setData(data);
-
-                        packet.setProcessingTime(time);
-                        packet.setProtocolId(protocolId);
-                        packet.setProtocolVersion(protocolVersion);
-                        packet.setUniqueId(uniqueId);
-
-                    } catch (IOException e) {
+                        packet = getPreDecoder().decode(new PacketBuffer(dataInputStream));
+                    } catch (Exception e) {
                         disconnect();
                         break;
                     }
+
                     LOGGER.log(LogLevel.DEBUG, "(Client-Side) ThunderClient received packet " + packet);
 
                     if (thunderListener != null) {
@@ -223,7 +218,6 @@ public class Thunder {
                         }
                     }
                 }
-
                 LOGGER.log(LogLevel.DEBUG, "(Client-Side) ThunderClient-Listener-Thread stopped!");
             });
 
@@ -246,7 +240,7 @@ public class Thunder {
         }
 
         @Override
-        public void sendObject(Object object) {
+        public synchronized void sendObject(Object object) {
             this.sendPacket(new PacketObject<>(object, System.currentTimeMillis()));
         }
 
@@ -278,6 +272,8 @@ public class Thunder {
         public synchronized void addCodec(PacketCodec packetCodec) {
             if (packetCodec instanceof PacketEncoder) {
                 encoder = (PacketEncoder) packetCodec;
+            } else if (packetCodec instanceof PacketPreDecoder) {
+                preDecoder = (PacketPreDecoder) packetCodec;
             } else {
                 decoder = (PacketDecoder) packetCodec;
             }
@@ -309,7 +305,7 @@ public class Thunder {
 
         private PacketEncoder encoder = new DefaultPacketEncoder();
         private PacketDecoder decoder = new DefaultPacketDecoder();
-
+        private PacketPreDecoder preDecoder = new DefaultPacketPreDecoder();
 
         private ThunderListener thunderListener;
         private final List<ObjectHandler<?>> objectHandlers;
@@ -329,7 +325,7 @@ public class Thunder {
         }
 
         @Override
-        public void setName(String name) {
+        public synchronized void setName(String name) {
             this.session.setSessionId(name);
         }
 
@@ -338,13 +334,13 @@ public class Thunder {
             this.thunderListener = serverListener;
         }
 
-        @Override
-        public void sendObject(Object object) {
+        @Override @SneakyThrows
+        public synchronized void sendObject(Object object) {
             this.sendPacket(new PacketObject<>(object, System.currentTimeMillis()));
         }
 
         @Override
-        public void addObjectListener(ObjectHandler<?> objectHandler) {
+        public synchronized void addObjectListener(ObjectHandler<?> objectHandler) {
             this.objectHandlers.add(objectHandler);
         }
 
@@ -436,22 +432,22 @@ public class Thunder {
         }
 
         @Override
-        public void sendPacket(Packet packet) {
+        public synchronized void sendPacket(Packet packet) {
             this.channel.processOut(packet);
         }
 
         @SneakyThrows @Override
-        public void flush() {
+        public synchronized void flush() {
             this.channel.flush();
         }
 
         @Override @SneakyThrows
-        public void sendPacket(Packet packet, ThunderClient client) {
+        public synchronized void sendPacket(Packet packet, ThunderClient client) {
             this.channel.processOut(packet, client.getChannel());
         }
 
         @Override
-        public void sendPacket(Packet packet, ThunderSession session) {
+        public synchronized void sendPacket(Packet packet, ThunderSession session) {
             ThunderClient thunderClient = this.clients.stream().filter(thunderClient1 -> thunderClient1.getSession().getUniqueId().equals(session.getUniqueId())).findFirst().orElse(null);
             if (thunderClient == null) {
                 return;
@@ -487,17 +483,20 @@ public class Thunder {
             }
         }
 
+
         @Override
-        public void addCodec(PacketCodec packetCodec) {
+        public synchronized void addCodec(PacketCodec packetCodec) {
             if (packetCodec instanceof PacketEncoder) {
                 encoder = (PacketEncoder) packetCodec;
+            } else if (packetCodec instanceof PacketPreDecoder) {
+                preDecoder = (PacketPreDecoder) packetCodec;
             } else {
                 decoder = (PacketDecoder) packetCodec;
             }
         }
 
         @Override
-        public boolean isConnected() {
+        public synchronized boolean isConnected() {
             return this.server.isBound();
         }
 
@@ -564,16 +563,6 @@ public class Thunder {
 
         public T get() {
             return this.t;
-        }
-    }
-
-    private static class EmptyThunderListener implements ThunderListener {
-
-        @Override
-        public void handleConnect(ThunderSession thunderConnection) {
-        }
-        @Override
-        public void handleDisconnect(ThunderSession thunderConnection) {
         }
     }
 

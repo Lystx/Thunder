@@ -3,6 +3,7 @@ package io.thunder.connection;
 import io.thunder.codec.PacketCodec;
 import io.thunder.codec.PacketDecoder;
 import io.thunder.codec.PacketEncoder;
+import io.thunder.codec.PacketPreDecoder;
 import io.thunder.connection.base.ThunderChannel;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
@@ -177,13 +178,19 @@ public interface ThunderConnection {
      */
     ThunderChannel getChannel();
 
-
     /**
      * Returns the Encoder
      *
      * @return encoder
      */
     PacketEncoder getEncoder();
+
+    /**
+     * Returns the PreDecoder
+     *
+     * @return pre decdoer
+     */
+    PacketPreDecoder getPreDecoder();
 
     /**
      * Returns the Decoder

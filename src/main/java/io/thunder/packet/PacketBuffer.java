@@ -220,7 +220,6 @@ public class PacketBuffer {
         }
     }
 
-    private Packet packet;
     private DataInputStream dataInputStream;
 
     /**
@@ -230,10 +229,18 @@ public class PacketBuffer {
      * @param packet the given Packet
      */
     public PacketBuffer(Packet packet) {
-        this.packet = packet;
-        this.dataInputStream = new DataInputStream(new ByteArrayInputStream(packet.getData()));
+        this(new DataInputStream(new ByteArrayInputStream(packet.getData())));
     }
 
+    /**
+     * Constructs the current Reader from a
+     * given Packet and sets the {@link java.io.InputStream}
+     *
+     * @param dataInputStream the given DataInputStream
+     */
+    public PacketBuffer(DataInputStream dataInputStream) {
+        this.dataInputStream = dataInputStream;
+    }
 
     /**
      * Reads a Var Int
@@ -415,4 +422,8 @@ public class PacketBuffer {
         return object;
     }
 
+    @SneakyThrows
+    public void readFully(byte[] data) {
+        this.dataInputStream.readFully(data);
+    }
 }
