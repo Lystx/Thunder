@@ -2,8 +2,8 @@
 
 package io.thunder.connection.base;
 
-import io.thunder.Thunder;
 import io.thunder.connection.ThunderConnection;
+import io.thunder.impl.connection.ProvidedThunderClient;
 import io.thunder.packet.Packet;
 import io.thunder.utils.ThunderAction;
 import lombok.SneakyThrows;
@@ -26,7 +26,7 @@ public interface ThunderClient extends ThunderConnection {
 
 
     static ThunderClient newInstance() {
-        return Thunder.createClient();
+        return ProvidedThunderClient.newInstance(Socket::new);
     }
 
     /**

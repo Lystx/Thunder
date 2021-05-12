@@ -3,6 +3,7 @@ package tests;
 import io.thunder.Thunder;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
+import io.thunder.impl.connection.ProvidedThunderClient;
 import io.thunder.manager.logger.LogLevel;
 import io.thunder.packet.Packet;
 import io.thunder.packet.handler.PacketHandler;

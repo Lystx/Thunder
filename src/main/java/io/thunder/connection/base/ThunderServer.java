@@ -1,9 +1,9 @@
 
 package io.thunder.connection.base;
 
-import io.thunder.Thunder;
 import io.thunder.connection.ThunderConnection;
 import io.thunder.connection.extra.ThunderSession;
+import io.thunder.impl.connection.ProvidedThunderServer;
 import io.thunder.packet.Packet;
 import io.thunder.utils.ThunderAction;
 
@@ -24,7 +24,7 @@ public interface ThunderServer extends ThunderConnection {
 
 
     static ThunderServer newInstance() {
-        return Thunder.createServer();
+        return ProvidedThunderServer.newInstance(ServerSocket::new, ThunderClient::newInstance);
     }
 
     List<ThunderClient> getClients();
