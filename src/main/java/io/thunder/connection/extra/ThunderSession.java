@@ -70,14 +70,14 @@ public interface ThunderSession {
      *
      * @return boolean if connected
      */
-    boolean isAuthenticated();
+    boolean isHandShaked();
 
     /**
      * Sets the Authentication of this {@link ThunderSession}
      *
      * @param b if it's authenticated or not
      */
-    void setAuthenticated(boolean b);
+    void setHandShaked(boolean b);
 
     /**
      * Returns the {@link ThunderConnection}

@@ -24,6 +24,8 @@ public class ProvidedThunderSession implements ThunderSession {
     @Setter
     private ThunderChannel channel; //The channel of this session
 
+    @Setter
+    private boolean handShaked;
     /**
      * Creates a new instance of the {@link ThunderSession}
      *
@@ -41,8 +43,6 @@ public class ProvidedThunderSession implements ThunderSession {
         return new ProvidedThunderSession(sessionId, uniqueId, connectedSessions, startTime, connection, channel, authenticated);
     }
 
-    @Setter
-    private boolean authenticated;
 
     /**
      * Sets the name of the Session

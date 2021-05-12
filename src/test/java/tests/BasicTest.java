@@ -3,8 +3,10 @@ package tests;
 import io.thunder.Thunder;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
-import io.thunder.impl.connection.ProvidedThunderClient;
-import io.thunder.manager.logger.LogLevel;
+import io.thunder.connection.extra.ThunderListener;
+import io.thunder.connection.extra.ThunderSession;
+import io.thunder.packet.impl.PacketHandshake;
+import io.thunder.utils.LogLevel;
 import io.thunder.packet.Packet;
 import io.thunder.packet.handler.PacketHandler;
 import packets.BasicExamplePacket;
@@ -30,6 +32,33 @@ public class BasicTest {
                     BasicExamplePacket basicExamplePacket = (BasicExamplePacket)packet;
                     System.out.println("[--->] " + basicExamplePacket.getName() + ":" + basicExamplePacket.getAge());
                 }
+            }
+        });
+
+        thunderClient.addSessionListener(new ThunderListener() {
+            @Override
+            public void handleConnect(ThunderSession session) {
+                System.out.println("[Client] Connected to ThunderServer (" + System.currentTimeMillis() + ")");
+            }
+
+            @Override
+            public void handleHandshake(PacketHandshake handshake) {
+                System.out.println("[Client] Received HandShake from ThunderServer! (" + System.currentTimeMillis() + ")");
+            }
+
+            @Override
+            public void handlePacketSend(Packet packet) {
+                System.out.println("[Client] Sending " + packet.getClass().getSimpleName() + "... (" + System.currentTimeMillis() + ")");
+            }
+
+            @Override
+            public void handlePacketReceive(Packet packet) {
+                System.out.println("[Client] Received " + packet.getClass().getSimpleName() + "! (" + System.currentTimeMillis() + ")");
+            }
+
+            @Override
+            public void handleDisconnect(ThunderSession session) {
+                System.out.println(thunderClient.toString());
             }
         });
 

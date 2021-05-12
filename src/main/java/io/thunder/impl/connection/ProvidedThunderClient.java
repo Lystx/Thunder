@@ -15,14 +15,17 @@ import io.thunder.connection.extra.ThunderSession;
 import io.thunder.impl.channel.ClientThunderChannel;
 import io.thunder.impl.other.ProvidedThunderAction;
 import io.thunder.impl.other.ProvidedThunderSession;
-import io.thunder.manager.factory.ThunderFactorySocket;
-import io.thunder.manager.logger.LogLevel;
+import io.thunder.packet.handler.PacketHandler;
+import io.thunder.packet.impl.PacketHandshake;
+import io.thunder.utils.LogLevel;
 import io.thunder.packet.Packet;
 import io.thunder.packet.PacketBuffer;
 import io.thunder.packet.handler.PacketAdapter;
-import io.thunder.packet.object.ObjectHandler;
-import io.thunder.packet.object.PacketObject;
+import io.thunder.packet.impl.object.ObjectHandler;
+import io.thunder.packet.impl.object.PacketObject;
 import io.thunder.utils.ThunderAction;
+import io.vson.elements.object.VsonObject;
+import io.vson.enums.FileFormat;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -36,56 +39,120 @@ import java.util.UUID;
 import static io.thunder.Thunder.LOGGER;
 
 @Getter
-public class ProvidedThunderClient implements ThunderClient {
+public class ProvidedThunderClient implements ThunderClient, PacketHandler {
 
-
-    private final ThunderFactorySocket sf;
-
+    /**
+     * The socket of the Client
+     */
     private Socket socket;
+
+    /**
+     * The dataInput to receive data
+     */
     private DataInputStream dataInputStream;
+
+    /**
+     * The dataOutput to send data
+     */
     private DataOutputStream dataOutputStream;
 
+    /**
+     * The packetAdapter to handle Packets
+     */
     private final PacketAdapter packetAdapter;
+
+    /**
+     * The session of this client
+     */
     private final ThunderSession session;
+
+    /**
+     * The channel of this client
+     */
     private final ThunderChannel channel;
 
-
+    /**
+     * The default {@link PacketEncoder}
+     */
     private PacketEncoder encoder = new DefaultPacketEncoder();
+
+    /**
+     * The default {@link PacketDecoder}
+     */
     private PacketDecoder decoder = new DefaultPacketDecoder();
+
+    /**
+     * The default {@link PacketPreDecoder}
+     */
     private PacketPreDecoder preDecoder = new DefaultPacketPreDecoder();
 
+    /**
+     * The thunderlistener to handle connect and disconnect
+     */
     private ThunderListener thunderListener;
+
+    /**
+     * The ObjectHandlers to handle incoming objects
+     */
     private final List<ObjectHandler<?>> objectHandlers;
 
-    private ProvidedThunderClient(ThunderFactorySocket sf) {
-        this.sf = sf;
+    /**
+     * Createing new {@link ThunderClient}
+     */
+    private ProvidedThunderClient() {
         this.packetAdapter = new PacketAdapter();
         this.objectHandlers = new ArrayList<>();
 
         this.session = ProvidedThunderSession.newInstance("[t:" + System.currentTimeMillis() + ", j: " + System.getProperty("java.version") + "]", UUID.randomUUID(), new LinkedList<>(), System.currentTimeMillis(), this, null, false);
         this.channel = ClientThunderChannel.newInstance(this);
+
+        this.addPacketHandler(this);
     }
 
-    public static ProvidedThunderClient newInstance(ThunderFactorySocket sf) {
-        return new ProvidedThunderClient(sf);
+    /**
+     * Creates a new {@link ThunderClient} with a given Factory
+     * @return Thunderclient
+     */
+    public static ProvidedThunderClient newInstance() {
+        return new ProvidedThunderClient();
     }
 
-
+    /**
+     * Sets the name of this connection
+     * @param name the name of the conneciton
+     */
     @Override
     public synchronized void setName(String name) {
         this.session.setSessionId(name);
     }
 
+    /**
+     * Adds a Listener to this session
+     *
+     * @param clientListener the listener
+     */
     @Override
     public synchronized void addSessionListener(ThunderListener clientListener) {
         this.thunderListener = clientListener;
     }
 
+    /**
+     * Adds an {@link ObjectHandler} to this client
+     *
+     * @param objectHandler the handler to add
+     */
     @Override
     public synchronized void addObjectListener(ObjectHandler<?> objectHandler) {
         this.objectHandlers.add(objectHandler);
     }
 
+    /**
+     * Connects to the {@link io.thunder.connection.base.ThunderServer}
+     *
+     * @param host the host to connect to
+     * @param port the port connect to
+     * @return ThunderAction to perform
+     */
     @Override
     public synchronized ThunderAction<ThunderClient> connect(String host, int port) {
         return ProvidedThunderAction.newInstance(thunderClient -> {
@@ -95,43 +162,61 @@ public class ProvidedThunderClient implements ThunderClient {
             }
             LOGGER.log(LogLevel.DEBUG, "(Client-Side) ThunderClient trying to connect " + host + ":" + port + "...");
             try {
-                this.setSocket(sf.getSocket(host, port));
+                this.setSocket(new Socket(host, port));
                 LOGGER.log(LogLevel.DEBUG, "(Client-Side) ThunderClient connected successfully to " + host + ":" + port + "!");
             } catch (Exception e) {
                 LOGGER.log(LogLevel.ERROR, "(Client-Side) ThunderClient wasn't able to connect to " + host + ":" + port + "!");
+                if (LOGGER.getLogLevel().equals(LogLevel.ERROR)) {
+                    e.printStackTrace();
+                }
             }
         }, this);
     }
 
+    /**
+     * Sets the Socket of this {@link ThunderClient}
+     *
+     * @param socket the socket
+     * @throws IOException if something goes wrong
+     */
     @Override
     public synchronized void setSocket(Socket socket) throws IOException {
         if (this.socket != null && !this.socket.isClosed()) {
             throw new IllegalStateException("ThunderClient could not be opened because it's already connected!");
         }
 
-        this.socket = socket;
-        this.session.setChannel(this.channel);
-        this.session.setAuthenticated(true);
+        //Socket managing
         socket.setKeepAlive(false);
+        this.socket = socket;
+
+        //Setting the session
+        this.session.setChannel(this.channel);
+
+        //Setting the Streams for In and OutPut
         this.dataInputStream = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
         this.dataOutputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 
+        //Starting Thread for reading Packets
         Thunder.EXECUTOR_SERVICE.submit(() -> {
 
             LOGGER.log(LogLevel.DEBUG, "(Client-Side) ThunderClient-Listener-Thread starting...");
             while (this.isConnected()) {
                 Packet packet;
                 try {
+                    //PreDecoding packet to get a raw object
                     packet = this.preDecoder.decode(new PacketBuffer(dataInputStream));
                 } catch (Exception e) {
-                    disconnect();
+                    //Couldn't encode this will break everything so disconnect!
+                    this.disconnect();
                     break;
                 }
 
+                //Packet was fully read and nothing went wrong
                 LOGGER.log(LogLevel.DEBUG, "(Client-Side) ThunderClient received packet " + packet);
 
                 if (thunderListener != null) {
                     try {
+                        //Handling the packet via
                         thunderListener.readPacket(packet, ProvidedThunderClient.this);
                     } catch (Exception e) {
                         LOGGER.log(LogLevel.ERROR, "(Client-Side) ThunderClient was unable to handle packet " + packet);
@@ -139,6 +224,7 @@ public class ProvidedThunderClient implements ThunderClient {
                     }
                 }
             }
+            //Thread stopped
             LOGGER.log(LogLevel.DEBUG, "(Client-Side) ThunderClient-Listener-Thread stopped!");
         });
 
@@ -147,24 +233,41 @@ public class ProvidedThunderClient implements ThunderClient {
         }
     }
 
+    /**
+     * Flushes this client
+     */
     @Override @SneakyThrows
     public synchronized void flush() {
-        if (!this.isConnected()) {
-            return;
-        }
-        this.socket.getOutputStream().flush();
+        this.channel.flush();
     }
 
-
+    /**
+     * Sends a packet through the {@link ThunderChannel}
+     *
+     * @param packet the packet to send
+     */
     @Override
     public synchronized void sendPacket(Packet packet) {
         if (!this.isConnected()) {
+            //If no connection no packet can be send
             return;
         }
+
+        if (this.thunderListener != null) {
+            thunderListener.handlePacketSend(packet);
+        }
+        if (packet.isCancelled()) {
+            return;
+        }
+
         LOGGER.log(LogLevel.DEBUG, "(Client-Side) ThunderClient sending packet " + packet);
         this.channel.processOut(packet);
     }
 
+    /**
+     * Sends an Object to the {@link io.thunder.connection.base.ThunderServer}
+     * @param object the objects
+     */
     @Override
     public synchronized void sendObject(Object object) {
         if (!this.isConnected()) {
@@ -173,29 +276,48 @@ public class ProvidedThunderClient implements ThunderClient {
         this.sendPacket(new PacketObject<>(object, System.currentTimeMillis()));
     }
 
+    /**
+     * Disconnects from the {@link io.thunder.connection.base.ThunderServer}
+     * and closes the connection and session
+     */
     @Override
     public synchronized void disconnect() {
-        if (socket == null || socket.isClosed()) {
+        if (!channel.isValid() || !channel.isOpen()) {
+            LOGGER.log(LogLevel.ERROR, "(Client-Side) ThunderClient tried to disconnect but was never connected");
             return;
         }
-
         LOGGER.log(LogLevel.DEBUG, "(Client-Side) ThunderClient stopping...");
         try {
-            socket.close();
+            channel.close(); //Closes the connection
             LOGGER.log(LogLevel.DEBUG, "(Client-Side) ThunderClient closed!");
 
-            this.session.setAuthenticated(false);
             if (thunderListener != null) {
                 thunderListener.handleDisconnect(this.session);
             }
 
-        } catch (final IOException e) {
+            //Resets the session
+            session.setHandShaked(false);
+            session.setChannel(null);
+            session.setSessionId(null);
+
+        } catch (IOException e) {
+            //Couldnt stop
+            try {
+                channel.close(); //Just trying one more time
+            } catch (IOException ioException) {
+                //Also didnt work
+                LOGGER.log(LogLevel.DEBUG, "(Client-Side) Tried to close ThunderClient again but didnt work 2x!");
+            }
             LOGGER.log(LogLevel.DEBUG, "(Client-Side) ThunderClient couldn't be closed!");
         }
-
     }
 
-
+    /**
+     * Adds a {@link PacketCodec} to this Client
+     * Can be a {@link PacketDecoder} | {@link PacketPreDecoder} | {@link PacketEncoder}
+     *
+     * @param packetCodec the PacketCodec
+     */
     @Override
     public synchronized void addCodec(PacketCodec packetCodec) {
         if (packetCodec instanceof PacketEncoder) {
@@ -207,13 +329,72 @@ public class ProvidedThunderClient implements ThunderClient {
         }
     }
 
+    /**
+     * Checks if the {@link ThunderClient} is connected
+     *
+     * @return boolean
+     */
     @Override
     public synchronized boolean isConnected() {
-        return socket != null && socket.isConnected() && !socket.isClosed();
+        return channel.isValid() && channel.isOpen();
     }
 
+    /**
+     * Transfers the data to string
+     *
+     * @return data as String
+     */
     @Override
     public synchronized String toString() {
-        return asString();
+
+        VsonObject vsonObject = new VsonObject();
+
+        vsonObject.append("session",
+                new VsonObject()
+                        .append("name", session.getSessionId())
+                        .append("uniqueId", session.getUniqueId())
+                        .append("startTime", session.getStartTime())
+                        .append("handShaked", session.isHandShaked())
+        );
+        vsonObject.append("connection",
+                new VsonObject()
+                        .append("type", "CLIENT")
+                        .append("channel",
+                                new VsonObject()
+                                        .append("remoteAddress", this.channel.remoteAddress().toString())
+                                        .append("localAddress", this.channel.localAddress().toString())
+                                        .append("valid", this.channel.isValid())
+                                        .append("open", this.channel.isOpen())
+                        )
+        );
+
+        vsonObject.append("general",
+                new VsonObject()
+                        .append("listener", this.getThunderListener() != null)
+                        .append("objectHandlers", this.getObjectHandlers().size())
+        );
+
+        vsonObject.append("codec",
+                new VsonObject()
+                        .append("preDecoder", preDecoder.getClass().getName())
+                        .append("decoder", decoder.getClass().getName())
+                        .append("encoder", encoder.getClass().getName())
+        );
+
+        return vsonObject.toString(FileFormat.JSON);
+    }
+
+    /**
+     * Checks for the Handshake
+     * @param packet the given Packet
+     */
+    @Override
+    public void handle(Packet packet) {
+        if (packet instanceof PacketHandshake) {
+            if (this.thunderListener != null) {
+                this.session.setHandShaked(true);
+                this.thunderListener.handleHandshake((PacketHandshake) packet);
+            }
+        }
     }
 }

@@ -1,4 +1,4 @@
-package io.thunder.packet.response;
+package io.thunder.packet.impl.response;
 
 import io.vson.elements.object.VsonObject;
 import io.vson.enums.FileFormat;

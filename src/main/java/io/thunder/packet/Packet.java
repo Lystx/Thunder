@@ -4,12 +4,9 @@ package io.thunder.packet;
 import io.thunder.Thunder;
 import io.thunder.connection.ThunderConnection;
 import io.thunder.connection.base.ThunderChannel;
-import io.thunder.manager.logger.LogLevel;
-import io.thunder.manager.logger.Logger;
-import io.thunder.packet.response.PacketRespond;
-import io.thunder.packet.response.Response;
-import io.thunder.packet.response.ResponseStatus;
-import io.vson.annotation.other.Vson;
+import io.thunder.utils.LogLevel;
+import io.thunder.packet.impl.response.PacketRespond;
+import io.thunder.packet.impl.response.ResponseStatus;
 import io.vson.elements.object.VsonObject;
 import io.vson.enums.FileFormat;
 import lombok.Getter;
@@ -71,6 +68,11 @@ public abstract class Packet {
      * that sends the Packet
      */
     protected ThunderChannel channel;
+
+    /**
+     * Cancels to send the packet
+     */
+    private boolean cancelled = false;
 
     /**
      * Will be called when the packet is received and fully

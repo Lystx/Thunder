@@ -7,7 +7,7 @@ import io.thunder.codec.PacketPreDecoder;
 import io.thunder.connection.ThunderConnection;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
-import io.thunder.manager.logger.LogLevel;
+import io.thunder.utils.LogLevel;
 import io.thunder.packet.Packet;
 import io.thunder.packet.PacketBuffer;
 import io.thunder.packet.handler.PacketHandler;

@@ -96,4 +96,11 @@ public interface ThunderChannel extends Closeable {
      */
     @Override
     void close() throws IOException;
+
+    /**
+     * Checks if the DataConnection is null
+     *
+     * @return boolean
+     */
+    boolean isValid();
 }

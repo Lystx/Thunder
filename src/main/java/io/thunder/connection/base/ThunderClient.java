@@ -26,7 +26,7 @@ public interface ThunderClient extends ThunderConnection {
 
 
     static ThunderClient newInstance() {
-        return ProvidedThunderClient.newInstance(Socket::new);
+        return ProvidedThunderClient.newInstance();
     }
 
     /**
@@ -49,13 +49,6 @@ public interface ThunderClient extends ThunderConnection {
      */
     Socket getSocket();
 
-    /**
-     * Returns Information on this Client
-     * @return
-     */
-    default String asString() {
-        return "[" + this.getSocket().getInetAddress().toString() + "@" + getSession().getUniqueId() + "]";
-    }
 
     /**
      * Writes a packet directly into the

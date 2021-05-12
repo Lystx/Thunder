@@ -18,14 +18,15 @@ import io.thunder.connection.extra.ThunderSession;
 import io.thunder.impl.channel.ServerThunderChannel;
 import io.thunder.impl.other.ProvidedThunderAction;
 import io.thunder.impl.other.ProvidedThunderSession;
-import io.thunder.manager.factory.ThunderFactoryClient;
-import io.thunder.manager.factory.ThunderFactoryServerSocket;
-import io.thunder.manager.logger.LogLevel;
+import io.thunder.packet.impl.PacketHandshake;
+import io.thunder.utils.LogLevel;
 import io.thunder.packet.Packet;
 import io.thunder.packet.handler.PacketAdapter;
-import io.thunder.packet.object.ObjectHandler;
-import io.thunder.packet.object.PacketObject;
+import io.thunder.packet.impl.object.ObjectHandler;
+import io.thunder.packet.impl.object.PacketObject;
 import io.thunder.utils.ThunderAction;
+import io.vson.elements.object.VsonObject;
+import io.vson.enums.FileFormat;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -44,9 +45,6 @@ import static io.thunder.Thunder.LOGGER;
 public class ProvidedThunderServer implements ThunderServer {
 
 
-    private final ThunderFactoryServerSocket ssf;
-    private final ThunderFactoryClient cf;
-
     private ServerSocket server;
     private final List<ThunderClient> clients;
     private final PacketAdapter packetAdapter;
@@ -61,9 +59,7 @@ public class ProvidedThunderServer implements ThunderServer {
     private final List<ObjectHandler<?>> objectHandlers;
 
 
-    private ProvidedThunderServer(ThunderFactoryServerSocket ssf, ThunderFactoryClient cf) {
-        this.ssf = ssf;
-        this.cf = cf;
+    private ProvidedThunderServer() {
 
         this.clients = new LinkedList<>();
         this.packetAdapter = new PacketAdapter();
@@ -73,8 +69,8 @@ public class ProvidedThunderServer implements ThunderServer {
         this.channel = ServerThunderChannel.newInstance(this);
     }
 
-    public static ThunderServer newInstance(ThunderFactoryServerSocket ssf, ThunderFactoryClient cf) {
-        return new ProvidedThunderServer(ssf, cf);
+    public static ThunderServer newInstance() {
+        return new ProvidedThunderServer();
     }
 
     @Override
@@ -103,8 +99,8 @@ public class ProvidedThunderServer implements ThunderServer {
             LOGGER.log(LogLevel.DEBUG, "(Server-Side) Server starting...");
 
             try {
-                this.server = ssf.getSocket(port);
-                this.session.setAuthenticated(true);
+                this.server = new ServerSocket(port);
+                this.session.setHandShaked(true);
                 this.session.setChannel(this.channel);
 
                 LOGGER.log(LogLevel.DEBUG, "(Server-Side) Server-Listener-Thread started!");
@@ -113,7 +109,7 @@ public class ProvidedThunderServer implements ThunderServer {
                     while (this.isConnected()) {
                         try {
                             Socket socket = server.accept();
-                            ThunderClient thunderClient = cf.getThunderClient();
+                            ThunderClient thunderClient = ThunderClient.newInstance();
 
                             thunderClient.addSessionListener(new ThunderListener() {
                                 @Override
@@ -122,9 +118,34 @@ public class ProvidedThunderServer implements ThunderServer {
                                         LOGGER.log(LogLevel.DEBUG, "(Server-Side) ThunderClient " + thunderSession + " has connected!");
                                         clients.add((ThunderClient) thunderSession.getConnection());
                                         session.getConnectedSessions().add(thunderSession);
+
+                                        //Handshaking
+                                        PacketHandshake packetHandshake = new PacketHandshake();
+                                        thunderSession.getChannel().processIn(packetHandshake);
                                     }
                                     if (thunderListener != null) {
                                         thunderListener.handleConnect(thunderSession);
+                                    }
+                                }
+
+                                @Override
+                                public void handleHandshake(PacketHandshake handshake) {
+                                    if (thunderListener != null) {
+                                        thunderListener.handleHandshake(handshake);
+                                    }
+                                }
+
+                                @Override
+                                public void handlePacketSend(Packet packet) {
+                                    if (thunderListener != null) {
+                                        thunderListener.handlePacketSend(packet);
+                                    }
+                                }
+
+                                @Override
+                                public void handlePacketReceive(Packet packet) {
+                                    if (thunderListener != null) {
+                                        thunderListener.handlePacketReceive(packet);
                                     }
                                 }
 
@@ -180,11 +201,53 @@ public class ProvidedThunderServer implements ThunderServer {
 
     @Override
     public String toString() {
-        return asString();
+
+        VsonObject vsonObject = new VsonObject();
+
+        vsonObject.append("session",
+                new VsonObject()
+                .append("name", session.getSessionId())
+                .append("uniqueId", session.getUniqueId())
+                .append("startTime", session.getStartTime())
+                .append("handShaked", session.isHandShaked())
+        );
+        vsonObject.append("connection",
+                new VsonObject()
+                .append("type", "SERVER")
+                .append("connectedClients", this.clients.size())
+                .append("channel",
+                        new VsonObject()
+                                .append("remoteAddress", this.channel.remoteAddress().toString())
+                                .append("localAddress", this.channel.localAddress().toString())
+                                .append("valid", this.channel.isValid())
+                                .append("open", this.channel.isOpen())
+                )
+        );
+
+        vsonObject.append("general",
+                new VsonObject()
+                        .append("listener", this.getThunderListener() != null)
+                        .append("objectHandlers", this.getObjectHandlers().size())
+        );
+
+        vsonObject.append("codec",
+                new VsonObject()
+                .append("preDecoder", preDecoder.getClass().getName())
+                .append("decoder", decoder.getClass().getName())
+                .append("encoder", encoder.getClass().getName())
+        );
+
+        return vsonObject.toString(FileFormat.JSON);
     }
 
     @Override
     public synchronized void sendPacket(Packet packet) {
+        if (this.thunderListener != null) {
+            thunderListener.handlePacketSend(packet);
+        }
+        if (packet.isCancelled()) {
+            return;
+        }
         this.channel.processOut(packet);
     }
 
@@ -195,11 +258,23 @@ public class ProvidedThunderServer implements ThunderServer {
 
     @Override @SneakyThrows
     public synchronized void sendPacket(Packet packet, ThunderClient client) {
+        if (this.thunderListener != null) {
+            thunderListener.handlePacketSend(packet);
+        }
+        if (packet.isCancelled()) {
+            return;
+        }
         this.channel.processOut(packet, client.getChannel());
     }
 
     @Override
     public synchronized void sendPacket(Packet packet, ThunderSession session) {
+        if (this.thunderListener != null) {
+            thunderListener.handlePacketSend(packet);
+        }
+        if (packet.isCancelled()) {
+            return;
+        }
         ThunderClient thunderClient = this.clients.stream().filter(thunderClient1 -> thunderClient1.getSession().getUniqueId().equals(session.getUniqueId())).findFirst().orElse(null);
         if (thunderClient == null) {
             return;
@@ -221,7 +296,7 @@ public class ProvidedThunderServer implements ThunderServer {
         }
 
         this.session.getConnectedSessions().clear();
-        this.session.setAuthenticated(false);
+        this.session.setHandShaked(false);
         this.session.setChannel(null);
 
         if (server == null) {

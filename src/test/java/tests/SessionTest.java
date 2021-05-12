@@ -5,13 +5,9 @@ import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
 import io.thunder.connection.extra.ThunderListener;
 import io.thunder.connection.extra.ThunderSession;
-import io.thunder.manager.logger.LogLevel;
 import io.thunder.packet.Packet;
-import io.thunder.packet.handler.PacketHandler;
-import packets.BasicExamplePacket;
-
-import java.io.IOException;
-import java.util.function.Consumer;
+import io.thunder.packet.impl.PacketHandshake;
+import io.thunder.utils.LogLevel;
 
 public class SessionTest {
 
@@ -36,6 +32,21 @@ public class SessionTest {
                 System.out.println("Address (Local): " + session.getChannel().localAddress());
 
                 session.disconnect(); //Stops the connection
+
+            }
+
+            @Override
+            public void handleHandshake(PacketHandshake handshake) {
+
+            }
+
+            @Override
+            public void handlePacketSend(Packet packet) {
+
+            }
+
+            @Override
+            public void handlePacketReceive(Packet packet) {
 
             }
 

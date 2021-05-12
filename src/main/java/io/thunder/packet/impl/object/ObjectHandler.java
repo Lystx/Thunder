@@ -1,4 +1,4 @@
-package io.thunder.packet.object;
+package io.thunder.packet.impl.object;
 
 import io.thunder.connection.base.ThunderChannel;
 

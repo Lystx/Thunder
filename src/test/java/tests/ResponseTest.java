@@ -3,12 +3,11 @@ package tests;
 import io.thunder.Thunder;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
-import io.thunder.manager.logger.LogLevel;
+import io.thunder.utils.LogLevel;
 import io.thunder.packet.Packet;
 import io.thunder.packet.handler.PacketHandler;
-import io.thunder.packet.response.Response;
-import io.thunder.packet.response.ResponseStatus;
-import packets.BasicExamplePacket;
+import io.thunder.packet.impl.response.Response;
+import io.thunder.packet.impl.response.ResponseStatus;
 import packets.ResponseExamplePacket;
 
 import java.util.function.Consumer;

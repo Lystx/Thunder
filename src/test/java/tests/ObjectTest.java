@@ -4,13 +4,8 @@ import io.thunder.Thunder;
 import io.thunder.connection.base.ThunderChannel;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
-import io.thunder.connection.extra.ThunderListener;
-import io.thunder.connection.extra.ThunderSession;
-import io.thunder.manager.logger.LogLevel;
-import io.thunder.packet.Packet;
-import io.thunder.packet.handler.PacketHandler;
-import io.thunder.packet.object.ObjectHandler;
-import packets.BasicExamplePacket;
+import io.thunder.utils.LogLevel;
+import io.thunder.packet.impl.object.ObjectHandler;
 import utils.ExampleObject;
 
 import java.util.Arrays;

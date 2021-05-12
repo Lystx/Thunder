@@ -24,7 +24,7 @@ public interface ThunderServer extends ThunderConnection {
 
 
     static ThunderServer newInstance() {
-        return ProvidedThunderServer.newInstance(ServerSocket::new, ThunderClient::newInstance);
+        return ProvidedThunderServer.newInstance();
     }
 
     List<ThunderClient> getClients();
@@ -58,11 +58,4 @@ public interface ThunderServer extends ThunderConnection {
      */
     ServerSocket getServer();
 
-    /**
-     * Returns Information on the Server
-     * @return
-     */
-    default String asString() {
-        return "[" + this.getServer().getInetAddress().toString() + "@" + getSession().getUniqueId() + "]";
-    }
 }
