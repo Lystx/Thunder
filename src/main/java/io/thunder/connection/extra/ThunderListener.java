@@ -78,6 +78,24 @@ public interface ThunderListener {
         this.handlePacketReceive(decodedPacket);
     }
 
+    static ThunderListener empty() {
+        return new ThunderListener() {
 
+            @Override
+            public void handleConnect(ThunderSession session) {}
 
+            @Override
+            public void handleHandshake(PacketHandshake handshake) {}
+
+            @Override
+            public void handlePacketSend(Packet packet) {}
+
+            @Override
+            public void handlePacketReceive(Packet packet) {}
+
+            @Override
+            public void handleDisconnect(ThunderSession session) {}
+
+        };
+    }
 }

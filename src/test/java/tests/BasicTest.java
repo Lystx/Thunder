@@ -63,7 +63,7 @@ public class BasicTest {
         });
 
         thunderServer.start(1401).perform(); //Starting server
-        thunderClient.connect("localhost", 1401).perform(new Consumer<ThunderClient>() { //Connecting client and accepting consumer
+        thunderClient.connect("localhost", 1401).performAsync(new Consumer<ThunderClient>() { //Connecting client and accepting consumer
             @Override
             public void accept(ThunderClient client) {
 

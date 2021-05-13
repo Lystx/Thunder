@@ -1,9 +1,9 @@
 package io.thunder.connection;
 
-import io.thunder.codec.PacketCodec;
-import io.thunder.codec.PacketDecoder;
-import io.thunder.codec.PacketEncoder;
-import io.thunder.codec.PacketPreDecoder;
+import io.thunder.connection.codec.PacketCodec;
+import io.thunder.connection.codec.PacketDecoder;
+import io.thunder.connection.codec.PacketEncoder;
+import io.thunder.connection.codec.PacketPreDecoder;
 import io.thunder.connection.base.ThunderChannel;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;

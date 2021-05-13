@@ -5,6 +5,8 @@ import io.vson.enums.FileFormat;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
+import java.util.UUID;
+
 /**
  * This class is used to receive a Response
  * from a Packet after it responded
@@ -32,6 +34,9 @@ public class Response {
      */
     private final long processingTime;
 
+
+    private int pos = -1;
+
     /**
      * Settign all values using a {@link PacketRespond}
      *
@@ -54,31 +59,86 @@ public class Response {
         this(new PacketRespond(status));
     }
 
+
     /**
-     * Transforms this Response into an Object
-     * with given class
+     * Sets current position and prepares to use all the other Methods like {@link Response#asString()} etc.
      *
-     * @param tClass the class of the Object
-     * @return transformed object
+     * @param pos the position
+     * @return current Response
      */
-    @SneakyThrows
-    public <T> T transform(Class<T> tClass) {
-        return new VsonObject(this.message).getAs(tClass);
+    public Response get(int pos) {
+        this.pos = pos;
+        return this;
     }
 
     /**
-     * Transforms a object from the Response into an Object
+     * Returns value of given positon as String
+     * Can only be used if the {@link Response#get(int)} was used before to declare the position
      *
-     * @param key name of the object
-     * @param tClass class of the object
-     * @return transformed Object
+     * @return value
      */
-    @SneakyThrows
-    public <T> T transform(int position, Class<T> tClass) {
-        return new VsonObject(this.message).getObject(String.valueOf(position), tClass);
+    public String asString() {
+        return this.asCustom(String.class);
     }
 
+    /**
+     * Returns value of given positon as long
+     * Can only be used if the {@link Response#get(int)} was used before to declare the position
+     *
+     * @return value
+     */
+    public long asLong() {
+        return this.asCustom(Long.class);
+    }
 
+    /**
+     * Returns value of given positon as int
+     * Can only be used if the {@link Response#get(int)} was used before to declare the position
+     *
+     * @return value
+     */
+    public int asInt() {
+        return this.asCustom(Integer.class);
+    }
+
+    /**
+     * Returns value of given positon as boolean
+     * Can only be used if the {@link Response#get(int)} was used before to declare the position
+     *
+     * @return value
+     */
+    public boolean asBoolean() {
+        return this.asCustom(Boolean.class);
+    }
+
+    /**
+     * Returns value of given positon as uuid
+     * Can only be used if the {@link Response#get(int)} was used before to declare the position
+     *
+     * @return value
+     */
+    public UUID asUUID() {
+        return this.asCustom(UUID.class);
+    }
+
+    /**
+     * This transforms the Object of the given position (before marked at {@link Response#get(int)} ) to
+     * your Class<T> to receive the object you want
+     *
+     * @param tClass the class of the object
+     * @return value
+     */
+    @SneakyThrows
+    public <T> T asCustom(Class<T> tClass) {
+        return new VsonObject(this.message).getObject(String.valueOf(this.pos), tClass);
+    }
+
+    /**
+     * Returns this Response's data transformed
+     * into a {@link VsonObject} and then parsed into a String
+     *
+     * @return data as String
+     */
     public String toString() {
         VsonObject vsonObject = new VsonObject();
 

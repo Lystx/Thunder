@@ -1,7 +1,7 @@
-package io.thunder.codec.impl;
+package io.thunder.impl.codec;
 
 import io.thunder.Thunder;
-import io.thunder.codec.PacketEncoder;
+import io.thunder.connection.codec.PacketEncoder;
 import io.thunder.utils.LogLevel;
 import io.thunder.packet.Packet;
 import io.thunder.packet.PacketBuffer;

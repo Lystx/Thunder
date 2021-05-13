@@ -1,4 +1,4 @@
-package io.thunder.codec;
+package io.thunder.connection.codec;
 
 import io.thunder.packet.Packet;
 import io.thunder.packet.PacketBuffer;

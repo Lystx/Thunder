@@ -2,13 +2,13 @@ package io.thunder.impl.connection;
 
 
 import io.thunder.Thunder;
-import io.thunder.codec.PacketCodec;
-import io.thunder.codec.PacketDecoder;
-import io.thunder.codec.PacketEncoder;
-import io.thunder.codec.PacketPreDecoder;
-import io.thunder.codec.impl.DefaultPacketDecoder;
-import io.thunder.codec.impl.DefaultPacketEncoder;
-import io.thunder.codec.impl.DefaultPacketPreDecoder;
+import io.thunder.connection.codec.PacketCodec;
+import io.thunder.connection.codec.PacketDecoder;
+import io.thunder.connection.codec.PacketEncoder;
+import io.thunder.connection.codec.PacketPreDecoder;
+import io.thunder.impl.codec.DefaultPacketDecoder;
+import io.thunder.impl.codec.DefaultPacketEncoder;
+import io.thunder.impl.codec.DefaultPacketPreDecoder;
 import io.thunder.connection.ThunderConnection;
 import io.thunder.connection.base.ThunderChannel;
 import io.thunder.connection.base.ThunderClient;
@@ -19,6 +19,7 @@ import io.thunder.impl.channel.ServerThunderChannel;
 import io.thunder.impl.other.ProvidedThunderAction;
 import io.thunder.impl.other.ProvidedThunderSession;
 import io.thunder.packet.impl.PacketHandshake;
+import io.thunder.packet.impl.response.Response;
 import io.thunder.utils.LogLevel;
 import io.thunder.packet.Packet;
 import io.thunder.packet.handler.PacketAdapter;
@@ -38,6 +39,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import static io.thunder.Thunder.LOGGER;
 
@@ -117,11 +119,28 @@ public class ProvidedThunderServer implements ThunderServer {
                                     synchronized (clients) {
                                         LOGGER.log(LogLevel.DEBUG, "(Server-Side) ThunderClient " + thunderSession + " has connected!");
                                         clients.add((ThunderClient) thunderSession.getConnection());
-                                        session.getConnectedSessions().add(thunderSession);
+
 
                                         //Handshaking
                                         PacketHandshake packetHandshake = new PacketHandshake();
-                                        thunderSession.getChannel().processIn(packetHandshake);
+
+                                        thunderServer.sendPacket(packetHandshake, thunderSession, new Consumer<Response>() {
+                                            @Override
+                                            public void accept(Response response) {
+
+                                                String sessionId = response.get(0).asString();
+                                                UUID uuid = response.get(1).asUUID();
+                                                long time = response.get(2).asLong();
+
+                                                thunderSession.setSessionId(sessionId.split("ThunderSession#")[1]);
+                                                thunderSession.setUniqueId(uuid);
+                                                thunderSession.setStartTime(time);
+                                                thunderSession.setHandShaked(true);
+
+                                                session.getConnectedSessions().add(thunderSession);
+                                            }
+                                        });
+
                                     }
                                     if (thunderListener != null) {
                                         thunderListener.handleConnect(thunderSession);

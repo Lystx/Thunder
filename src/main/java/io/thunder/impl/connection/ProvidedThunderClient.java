@@ -1,13 +1,13 @@
 package io.thunder.impl.connection;
 
 import io.thunder.Thunder;
-import io.thunder.codec.PacketCodec;
-import io.thunder.codec.PacketDecoder;
-import io.thunder.codec.PacketEncoder;
-import io.thunder.codec.PacketPreDecoder;
-import io.thunder.codec.impl.DefaultPacketDecoder;
-import io.thunder.codec.impl.DefaultPacketEncoder;
-import io.thunder.codec.impl.DefaultPacketPreDecoder;
+import io.thunder.connection.codec.PacketCodec;
+import io.thunder.connection.codec.PacketDecoder;
+import io.thunder.connection.codec.PacketEncoder;
+import io.thunder.connection.codec.PacketPreDecoder;
+import io.thunder.impl.codec.DefaultPacketDecoder;
+import io.thunder.impl.codec.DefaultPacketEncoder;
+import io.thunder.impl.codec.DefaultPacketPreDecoder;
 import io.thunder.connection.base.ThunderChannel;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.extra.ThunderListener;
@@ -17,6 +17,7 @@ import io.thunder.impl.other.ProvidedThunderAction;
 import io.thunder.impl.other.ProvidedThunderSession;
 import io.thunder.packet.handler.PacketHandler;
 import io.thunder.packet.impl.PacketHandshake;
+import io.thunder.packet.impl.response.ResponseStatus;
 import io.thunder.utils.LogLevel;
 import io.thunder.packet.Packet;
 import io.thunder.packet.PacketBuffer;
@@ -392,8 +393,14 @@ public class ProvidedThunderClient implements ThunderClient, PacketHandler {
     public void handle(Packet packet) {
         if (packet instanceof PacketHandshake) {
             if (this.thunderListener != null) {
+
+                PacketHandshake handshake = (PacketHandshake)packet;
+
                 this.session.setHandShaked(true);
-                this.thunderListener.handleHandshake((PacketHandshake) packet);
+
+                handshake.respond(ResponseStatus.SUCCESS, this.session.getSessionId(), this.session.getUniqueId(), this.session.getStartTime());
+
+                this.thunderListener.handleHandshake(handshake);
             }
         }
     }

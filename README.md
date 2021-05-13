@@ -3,19 +3,19 @@ What is Thunder?
 
 Thunder is an open-source and easy to use Java Networking Framework 
 for Java 1.8 and higher
-Thunder uses TCP for guranteed data transfer or TLS if you want to use encryption.
+Thunder uses TCP for guranteed data transfer 
 Thunder is thread safe and supports Compression of Packets.
   
 ---------
 
 Content:
 
-- [Basics](#basics)
+- [Understanding the Basics](#basics)
 - [ThunderServer](#thunderserver) 
 - [ThunderClient](#thunderclient)
-- [ThunderListener](#thunderlistener)
-- [Packets](#packets)
-- [PacketHandling](#packethandling)
+- [Using a ThunderListener](#thunderlistener)
+- [Creating and Sending Packets](#packets)
+- [Handling Packets](#packethandling)
 - [Response System](#response-system)
 
 ---------
@@ -64,18 +64,34 @@ The Listener can be add to a ThunderConnection (so either ThunderClient or Thund
 
 ```Java
 
-ThunderServer thunderServer = Thunder.createServer(new ThunderListener() {
- 
-       @Override
-       public void handleConnect(ThunderSession session) {
 
-       }
+thunderClient.addSessionListener(new ThunderListener() {
+    @Override
+    public void handleConnect(ThunderSession session) {
+        System.out.println("[Client] Connected to ThunderServer (" + System.currentTimeMillis() + ")");
+    }
 
-       @Override
-       public void handleDisconnect(ThunderSession session) {
+    @Override
+    public void handleHandshake(PacketHandshake handshake) {
+        System.out.println("[Client] Received HandShake from ThunderServer! (" + System.currentTimeMillis() + ")");
+     }
 
-       }
-   });
+    @Override
+    public void handlePacketSend(Packet packet) {
+        System.out.println("[Client] Sending " + packet.getClass().getSimpleName() + "... (" + System.currentTimeMillis() + ")");
+    }
+
+    @Override
+    public void handlePacketReceive(Packet packet) {
+        System.out.println("[Client] Received " + packet.getClass().getSimpleName() + "! (" + System.currentTimeMillis() + ")");
+     }
+
+    @Override
+    public void handleDisconnect(ThunderSession session) {
+        System.out.println(thunderClient.toString());
+    }
+    
+});
 
 ```
 

@@ -1,11 +1,14 @@
-package io.thunder.codec.impl;
+package io.thunder.impl.codec;
 
-import io.thunder.codec.PacketDecoder;
+import io.thunder.connection.codec.PacketDecoder;
 import io.thunder.connection.ThunderConnection;
 import io.thunder.packet.Packet;
 import io.thunder.packet.PacketBuffer;
 
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 public class DefaultPacketDecoder extends PacketDecoder {
 
@@ -17,26 +20,39 @@ public class DefaultPacketDecoder extends PacketDecoder {
         try {
             Class<? extends Packet> _class = (Class<? extends Packet>) Class.forName(s);
 
+            Constructor<?> constructor;
+
+            try {
+                List<Constructor<?>> constructors = Arrays.asList(_class.getDeclaredConstructors());
+
+                constructors.sort(Comparator.comparingInt(Constructor::getParameterCount));
+
+                constructor = constructors.get(constructors.size() - 1);
+            } catch (Exception e) {
+                constructor = null;
+            }
 
 
             //Iterates through all Constructors to create a new Instance of the Object
             //And to set all values to null, -1 or false
             Packet bufferedPacket = null;
-            for (Constructor<?> declaredConstructor : _class.getDeclaredConstructors()) {
-                Object[] args = new Object[declaredConstructor.getParameters().length];
-                for (int i = 0; i < declaredConstructor.getParameterTypes().length; i++) {
-                    final Class<?> parameterType = declaredConstructor.getParameterTypes()[i];
+            if (constructor != null) {
+                Object[] args = new Object[constructor.getParameters().length];
+                for (int i = 0; i < constructor.getParameterTypes().length; i++) {
+                    final Class<?> parameterType = constructor.getParameterTypes()[i];
                     if (Number.class.isAssignableFrom(parameterType)) {
                         args[i] = -1;
                     } else if (parameterType.equals(boolean.class) || parameterType.equals(Boolean.class)) {
                         args[i] = false;
-                    } else if (parameterType.equals(int.class) || parameterType.equals(double.class) || parameterType.equals(short.class) || parameterType.equals(long.class) || parameterType.equals(float.class)) {
+                    } else if (parameterType.equals(int.class) || parameterType.equals(double.class) || parameterType.equals(short.class) || parameterType.equals(long.class) || parameterType.equals(float.class) || parameterType.equals(byte.class)) {
+                        args[i] = -1;
+                    } else if (parameterType.equals(Integer.class) || parameterType.equals(Double.class) || parameterType.equals(Short.class) || parameterType.equals(Long.class) || parameterType.equals(Float.class) || parameterType.equals(Byte.class)) {
                         args[i] = -1;
                     } else {
                         args[i] = null;
                     }
                 }
-                bufferedPacket = (Packet) declaredConstructor.newInstance(args);
+                bufferedPacket = (Packet) constructor.newInstance(args);
             }
 
             if (bufferedPacket == null) {
@@ -53,6 +69,7 @@ public class DefaultPacketDecoder extends PacketDecoder {
 
             //Reads the packet with the Reader
             bufferedPacket.read(buf);
+
             return bufferedPacket;
         } catch (Exception e) {
             //IGNORING NOT BUFFERED PACKET

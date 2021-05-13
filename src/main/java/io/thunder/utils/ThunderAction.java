@@ -1,6 +1,7 @@
 package io.thunder.utils;
 
 
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public interface ThunderAction<T> {
@@ -41,4 +42,12 @@ public interface ThunderAction<T> {
      * @return T value
      */
     T get();
+
+    /**
+     * Performs this action later
+     *
+     * @param time the time (e.g. "1")
+     * @param timeUnit the unit (e.g. "Minute")
+     */
+    void performAfter(long time, TimeUnit timeUnit);
 }

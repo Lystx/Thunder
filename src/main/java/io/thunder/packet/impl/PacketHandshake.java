@@ -1,18 +1,11 @@
 package io.thunder.packet.impl;
 
-import io.thunder.packet.Packet;
-import io.thunder.packet.PacketBuffer;
-
-public class PacketHandshake extends Packet {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 
-    @Override
-    public void write(PacketBuffer buf) {
+@Getter @AllArgsConstructor
+public class PacketHandshake extends EmptyPacket {
 
-    }
 
-    @Override
-    public void read(PacketBuffer buf) {
-
-    }
 }

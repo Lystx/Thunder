@@ -5,6 +5,9 @@ import io.thunder.utils.ThunderAction;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -66,5 +69,15 @@ public class ProvidedThunderAction<T> implements ThunderAction<T> {
      */
     public T get() {
         return this.t;
+    }
+
+    @Override
+    public void performAfter(long time, TimeUnit timeUnit) {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                perform();
+            }
+        }, timeUnit.toMillis(time));
     }
 }

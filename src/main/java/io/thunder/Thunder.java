@@ -52,7 +52,7 @@ public class Thunder {
      */
     public synchronized static ThunderClient createClient(ThunderListener thunderListener) {
         ThunderClient thunderClient = ThunderClient.newInstance();
-        thunderClient.addSessionListener(thunderListener);
+        thunderClient.addSessionListener(thunderListener == null ? ThunderListener.empty() : thunderListener);
         return thunderClient;
     }
 
@@ -77,7 +77,7 @@ public class Thunder {
      */
     public synchronized static ThunderServer createServer(ThunderListener thunderListener) {
         ThunderServer thunderServer = ThunderServer.newInstance();
-        thunderServer.addSessionListener(thunderListener);
+        thunderServer.addSessionListener(thunderListener == null ? ThunderListener.empty() : thunderListener);
         return thunderServer;
     }
 

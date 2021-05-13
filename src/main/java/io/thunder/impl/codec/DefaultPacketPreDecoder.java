@@ -1,6 +1,6 @@
-package io.thunder.codec.impl;
+package io.thunder.impl.codec;
 
-import io.thunder.codec.PacketPreDecoder;
+import io.thunder.connection.codec.PacketPreDecoder;
 import io.thunder.packet.Packet;
 import io.thunder.packet.PacketBuffer;
 

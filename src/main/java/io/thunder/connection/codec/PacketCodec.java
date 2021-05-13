@@ -1,4 +1,4 @@
-package io.thunder.codec;
+package io.thunder.connection.codec;
 
 /**
  * Class to mark PacketEncoder and PacketDecoder

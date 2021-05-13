@@ -33,6 +33,20 @@ public interface ThunderSession {
     void setSessionId(String sessionId);
 
     /**
+     * Sets the uniqueId of this Session
+     *
+     * @param uniqueId the ID as {@link UUID}
+     */
+    void setUniqueId(UUID uniqueId);
+
+    /**
+     * Sets the startTime of this Session
+     *
+     * @param startTime the time as {@link Long}
+     */
+    void setStartTime(long startTime);
+
+    /**
      * This is the {@link UUID} of the Session
      * to identify it later (Developer purposes)
      *

@@ -40,7 +40,7 @@ public class ResponseTest {
                 ResponseExamplePacket responseExamplePacket = new ResponseExamplePacket(20, 40);
 
                 Response response = client.transferToResponse(responseExamplePacket); //Waiting for the response
-                System.out.println("[Math] " + responseExamplePacket.getA() + " + " + responseExamplePacket.getB() + " = " + response.transform(0, Integer.class));
+                System.out.println("[Math] " + responseExamplePacket.getA() + " + " + responseExamplePacket.getB() + " = " + response.get(0).asInt());
             }
         });
     }

@@ -11,15 +11,15 @@ import lombok.Setter;
 import java.util.List;
 import java.util.UUID;
 
-@Getter
+@Getter @Setter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProvidedThunderSession implements ThunderSession {
 
     private String sessionId; //The name
-    private final UUID uniqueId; //the uuid
-    private final List<ThunderSession> connectedSessions; //The sessions
-    private final long startTime; //The time it started
-    private final ThunderConnection connection; //The connection
+    private UUID uniqueId; //the uuid
+    private List<ThunderSession> connectedSessions; //The sessions
+    private long startTime; //The time it started
+    private ThunderConnection connection; //The connection
 
     @Setter
     private ThunderChannel channel; //The channel of this session
