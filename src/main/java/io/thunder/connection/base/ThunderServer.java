@@ -2,8 +2,7 @@
 package io.thunder.connection.base;
 
 import io.thunder.Thunder;
-import io.thunder.connection.ThunderConnection;
-import io.thunder.connection.extra.ThunderSession;
+import io.thunder.connection.data.ThunderConnection;
 import io.thunder.impl.connection.ProvidedThunderServer;
 import io.thunder.packet.Packet;
 import io.thunder.packet.handler.PacketHandler;

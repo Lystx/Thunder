@@ -5,13 +5,15 @@ import io.thunder.connection.codec.PacketCodec;
 import io.thunder.connection.codec.PacketDecoder;
 import io.thunder.connection.codec.PacketEncoder;
 import io.thunder.connection.codec.PacketPreDecoder;
+import io.thunder.connection.data.ThunderConnection;
+import io.thunder.connection.extra.PacketCompressor;
 import io.thunder.impl.codec.DefaultPacketDecoder;
 import io.thunder.impl.codec.DefaultPacketEncoder;
 import io.thunder.impl.codec.DefaultPacketPreDecoder;
-import io.thunder.connection.base.ThunderChannel;
+import io.thunder.connection.data.ThunderChannel;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.extra.ThunderListener;
-import io.thunder.connection.extra.ThunderSession;
+import io.thunder.connection.base.ThunderSession;
 import io.thunder.impl.channel.ClientThunderChannel;
 import io.thunder.impl.other.ProvidedThunderAction;
 import io.thunder.impl.other.ProvidedThunderSession;
@@ -98,11 +100,17 @@ public class ProvidedThunderClient implements ThunderClient, PacketHandler {
     private final List<ObjectHandler<?>> objectHandlers;
 
     /**
+     * The ObjectHandlers to handle incoming objects
+     */
+    private final List<PacketCompressor> packetCompressors;
+
+    /**
      * Createing new {@link ThunderClient}
      */
     private ProvidedThunderClient() {
         this.packetAdapter = new PacketAdapter();
         this.objectHandlers = new ArrayList<>();
+        this.packetCompressors = new ArrayList<>();
 
         this.session = ProvidedThunderSession.newInstance("[t:" + System.currentTimeMillis() + ", j: " + System.getProperty("java.version") + "]", UUID.randomUUID(), new LinkedList<>(), System.currentTimeMillis(), this, null, false);
         this.channel = ClientThunderChannel.newInstance(this);
@@ -147,6 +155,10 @@ public class ProvidedThunderClient implements ThunderClient, PacketHandler {
         this.objectHandlers.add(objectHandler);
     }
 
+    @Override
+    public synchronized void addCompressor(PacketCompressor compressor) {
+        this.packetCompressors.add(compressor);
+    }
     /**
      * Connects to the {@link io.thunder.connection.base.ThunderServer}
      *

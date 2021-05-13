@@ -3,9 +3,10 @@
 package io.thunder.connection.extra;
 
 import io.thunder.Thunder;
-import io.thunder.connection.ThunderConnection;
+import io.thunder.connection.data.ThunderConnection;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
+import io.thunder.connection.base.ThunderSession;
 import io.thunder.packet.impl.PacketHandshake;
 import io.thunder.utils.LogLevel;
 import io.thunder.packet.*;
@@ -73,6 +74,13 @@ public interface ThunderListener {
             Thunder.LOGGER.log(LogLevel.ERROR, "A Packet could not be decoded and was marked as null (Class: " + packet.getClass().getName() + ")");
             return;
         }
+
+        if (thunderConnection.getPacketCompressors().isEmpty()) {
+            for (PacketCompressor packetCompressor : thunderConnection.getPacketCompressors()) {
+                decodedPacket = packetCompressor.decompress(decodedPacket);
+            }
+        }
+
         decodedPacket.handle(thunderConnection);
         thunderConnection.getPacketAdapter().handle(decodedPacket);
         this.handlePacketReceive(decodedPacket);

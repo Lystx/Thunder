@@ -4,7 +4,7 @@ import io.thunder.Thunder;
 import io.thunder.connection.codec.PacketDecoder;
 import io.thunder.connection.codec.PacketEncoder;
 import io.thunder.connection.codec.PacketPreDecoder;
-import io.thunder.connection.ThunderConnection;
+import io.thunder.connection.data.ThunderConnection;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
 import io.thunder.utils.LogLevel;

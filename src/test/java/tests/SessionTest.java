@@ -4,7 +4,7 @@ import io.thunder.Thunder;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
 import io.thunder.connection.extra.ThunderListener;
-import io.thunder.connection.extra.ThunderSession;
+import io.thunder.connection.base.ThunderSession;
 import io.thunder.packet.Packet;
 import io.thunder.packet.impl.PacketHandshake;
 import io.thunder.utils.LogLevel;

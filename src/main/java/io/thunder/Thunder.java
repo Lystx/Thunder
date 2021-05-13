@@ -3,8 +3,6 @@ package io.thunder;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
 import io.thunder.connection.extra.ThunderListener;
-import io.thunder.connection.extra.ThunderSession;
-import io.thunder.packet.impl.PacketHandshake;
 import io.thunder.utils.LogLevel;
 import io.thunder.utils.Logger;
 import java.util.concurrent.ExecutorService;

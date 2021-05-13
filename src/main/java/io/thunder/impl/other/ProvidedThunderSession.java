@@ -1,8 +1,8 @@
 package io.thunder.impl.other;
 
-import io.thunder.connection.ThunderConnection;
-import io.thunder.connection.base.ThunderChannel;
-import io.thunder.connection.extra.ThunderSession;
+import io.thunder.connection.data.ThunderConnection;
+import io.thunder.connection.data.ThunderChannel;
+import io.thunder.connection.base.ThunderSession;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

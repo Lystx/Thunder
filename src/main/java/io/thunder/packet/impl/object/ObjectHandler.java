@@ -1,6 +1,6 @@
 package io.thunder.packet.impl.object;
 
-import io.thunder.connection.base.ThunderChannel;
+import io.thunder.connection.data.ThunderChannel;
 
 public interface ObjectHandler<T> {
 

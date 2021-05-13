@@ -1,14 +1,14 @@
-package io.thunder.connection;
+package io.thunder.connection.data;
 
 import io.thunder.connection.codec.PacketCodec;
 import io.thunder.connection.codec.PacketDecoder;
 import io.thunder.connection.codec.PacketEncoder;
 import io.thunder.connection.codec.PacketPreDecoder;
-import io.thunder.connection.base.ThunderChannel;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
+import io.thunder.connection.extra.PacketCompressor;
 import io.thunder.connection.extra.ThunderListener;
-import io.thunder.connection.extra.ThunderSession;
+import io.thunder.connection.base.ThunderSession;
 import io.thunder.packet.*;
 import io.thunder.packet.handler.PacketAdapter;
 import io.thunder.packet.handler.PacketHandler;
@@ -48,6 +48,17 @@ public interface ThunderConnection {
      * @param objectHandler the handler to add
      */
     void addObjectListener(ObjectHandler<?> objectHandler);
+
+    /**
+     * Adds a {@link PacketCompressor} to the current
+     * Connection to (de-)compress all in- or outcoming packets
+     *
+     * @param compressor the compressor to add
+     */
+    void addCompressor(PacketCompressor compressor);
+
+
+    List<PacketCompressor> getPacketCompressors();
 
     /**
      * Returns all the registered {@link ObjectHandler}s
@@ -215,6 +226,19 @@ public interface ThunderConnection {
      * @throws IOException
      */
     static void processOut(Packet packet, DataOutputStream dataOutputStream) throws IOException {
+
+        ThunderConnection connection = packet.getConnection();
+
+        if (connection.getPacketCompressors().isEmpty()) {
+            for (PacketCompressor packetCompressor : connection.getPacketCompressors()) {
+                try {
+                    packet = packetCompressor.decompress(packet);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
 
         PacketEncoder encoder = packet.getConnection().getEncoder();
         try {

@@ -1,7 +1,7 @@
 package tests;
 
 import io.thunder.Thunder;
-import io.thunder.connection.base.ThunderChannel;
+import io.thunder.connection.data.ThunderChannel;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
 import io.thunder.utils.LogLevel;

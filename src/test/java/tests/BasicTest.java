@@ -4,7 +4,11 @@ import io.thunder.Thunder;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
 import io.thunder.connection.extra.ThunderListener;
-import io.thunder.connection.extra.ThunderSession;
+import io.thunder.connection.base.ThunderSession;
+import io.thunder.impl.codec.DefaultPacketDecoder;
+import io.thunder.impl.codec.DefaultPacketEncoder;
+import io.thunder.impl.codec.DefaultPacketPreDecoder;
+import io.thunder.impl.other.DefaultPacketCompressor;
 import io.thunder.packet.impl.PacketHandshake;
 import io.thunder.utils.LogLevel;
 import io.thunder.packet.Packet;
@@ -34,6 +38,7 @@ public class BasicTest {
                 }
             }
         });
+
 
         thunderClient.addSessionListener(new ThunderListener() {
             @Override

@@ -2,8 +2,8 @@ package io.thunder.packet;
 
 
 import io.thunder.Thunder;
-import io.thunder.connection.ThunderConnection;
-import io.thunder.connection.base.ThunderChannel;
+import io.thunder.connection.data.ThunderConnection;
+import io.thunder.connection.data.ThunderChannel;
 import io.thunder.utils.LogLevel;
 import io.thunder.packet.impl.response.PacketRespond;
 import io.thunder.packet.impl.response.ResponseStatus;

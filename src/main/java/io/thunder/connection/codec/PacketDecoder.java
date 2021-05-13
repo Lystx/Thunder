@@ -1,6 +1,6 @@
 package io.thunder.connection.codec;
 
-import io.thunder.connection.ThunderConnection;
+import io.thunder.connection.data.ThunderConnection;
 import io.thunder.packet.Packet;
 import io.thunder.packet.PacketBuffer;
 

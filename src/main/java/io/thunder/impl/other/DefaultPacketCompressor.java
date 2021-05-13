@@ -9,7 +9,7 @@ import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-public class ProvidedPacketCompressor implements PacketCompressor {
+public class DefaultPacketCompressor implements PacketCompressor {
 
     @Override
     public Packet compress(Packet packet) throws Exception {

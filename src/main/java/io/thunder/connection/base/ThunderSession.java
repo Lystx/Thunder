@@ -1,10 +1,9 @@
-package io.thunder.connection.extra;
+package io.thunder.connection.base;
 
 
-import io.thunder.connection.ThunderConnection;
-import io.thunder.connection.base.*;
+import io.thunder.connection.data.ThunderChannel;
+import io.thunder.connection.data.ThunderConnection;
 
-import java.nio.channels.Channel;
 import java.util.List;
 import java.util.UUID;
 

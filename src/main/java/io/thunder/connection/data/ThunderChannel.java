@@ -1,6 +1,7 @@
-package io.thunder.connection.base;
+package io.thunder.connection.data;
 
-import io.thunder.connection.extra.ThunderSession;
+import io.thunder.connection.base.ThunderClient;
+import io.thunder.connection.base.ThunderSession;
 import io.thunder.packet.Packet;
 
 import java.io.Closeable;

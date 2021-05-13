@@ -6,15 +6,16 @@ import io.thunder.connection.codec.PacketCodec;
 import io.thunder.connection.codec.PacketDecoder;
 import io.thunder.connection.codec.PacketEncoder;
 import io.thunder.connection.codec.PacketPreDecoder;
+import io.thunder.connection.extra.PacketCompressor;
 import io.thunder.impl.codec.DefaultPacketDecoder;
 import io.thunder.impl.codec.DefaultPacketEncoder;
 import io.thunder.impl.codec.DefaultPacketPreDecoder;
-import io.thunder.connection.ThunderConnection;
-import io.thunder.connection.base.ThunderChannel;
+import io.thunder.connection.data.ThunderConnection;
+import io.thunder.connection.data.ThunderChannel;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
 import io.thunder.connection.extra.ThunderListener;
-import io.thunder.connection.extra.ThunderSession;
+import io.thunder.connection.base.ThunderSession;
 import io.thunder.impl.channel.ServerThunderChannel;
 import io.thunder.impl.other.ProvidedThunderAction;
 import io.thunder.impl.other.ProvidedThunderSession;
@@ -59,6 +60,7 @@ public class ProvidedThunderServer implements ThunderServer {
 
     private ThunderListener thunderListener;
     private final List<ObjectHandler<?>> objectHandlers;
+    private final List<PacketCompressor> packetCompressors;
 
 
     private ProvidedThunderServer() {
@@ -66,9 +68,11 @@ public class ProvidedThunderServer implements ThunderServer {
         this.clients = new LinkedList<>();
         this.packetAdapter = new PacketAdapter();
         this.objectHandlers = new ArrayList<>();
+        this.packetCompressors = new ArrayList<>();
 
         this.session = ProvidedThunderSession.newInstance("[t:" + System.currentTimeMillis() + ", j: " + System.getProperty("java.version") + "]", UUID.randomUUID(), new LinkedList<>(), System.currentTimeMillis(), this,null, false);
         this.channel = ServerThunderChannel.newInstance(this);
+
     }
 
     public static ThunderServer newInstance() {
@@ -93,6 +97,11 @@ public class ProvidedThunderServer implements ThunderServer {
     @Override
     public synchronized void addObjectListener(ObjectHandler<?> objectHandler) {
         this.objectHandlers.add(objectHandler);
+    }
+
+    @Override
+    public synchronized void addCompressor(PacketCompressor compressor) {
+        this.packetCompressors.add(compressor);
     }
 
     @Override

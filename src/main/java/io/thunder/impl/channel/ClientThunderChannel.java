@@ -1,11 +1,10 @@
 package io.thunder.impl.channel;
 
 
-import io.thunder.connection.ThunderConnection;
-import io.thunder.connection.base.ThunderChannel;
+import io.thunder.connection.data.ThunderConnection;
+import io.thunder.connection.data.ThunderChannel;
 import io.thunder.connection.base.ThunderClient;
-import io.thunder.connection.base.ThunderServer;
-import io.thunder.connection.extra.ThunderSession;
+import io.thunder.connection.base.ThunderSession;
 import io.thunder.packet.Packet;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
