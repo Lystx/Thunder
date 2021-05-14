@@ -11,7 +11,7 @@ public class DefaultPacketPreDecoder extends PacketPreDecoder {
     @Override
     public Packet decode(PacketBuffer buf) throws Exception {
 
-        Packet packet = new Packet() {public void write(PacketBuffer buf) {} public void read(PacketBuffer buf) {}};
+        Packet packet = Packet.newInstance();
 
         int protocolId = buf.readInt();
         int protocolVersion = buf.readInt();

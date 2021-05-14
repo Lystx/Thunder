@@ -286,6 +286,10 @@ public class ProvidedThunderClient implements ThunderClient, PacketHandler {
         if (!this.isConnected()) {
             return;
         }
+        if (!Serializable.class.isAssignableFrom(object.getClass())) {
+            LOGGER.log(LogLevel.ERROR, "(Server-Side) ThunderServer couldn't send object from class " + object.getClass().getSimpleName() + " because it doesn't implements java.io.Serializable !");
+            return;
+        }
         this.sendPacket(new PacketObject<>(object, System.currentTimeMillis()));
     }
 

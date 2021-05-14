@@ -33,6 +33,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -91,6 +92,10 @@ public class ProvidedThunderServer implements ThunderServer {
 
     @Override @SneakyThrows
     public synchronized void sendObject(Object object) {
+        if (!Serializable.class.isAssignableFrom(object.getClass())) {
+            LOGGER.log(LogLevel.ERROR, "(Server-Side) ThunderServer couldn't send object from class " + object.getClass().getSimpleName() + " because it doesn't implements java.io.Serializable !");
+            return;
+        }
         this.sendPacket(new PacketObject<>(object, System.currentTimeMillis()));
     }
 
@@ -133,10 +138,9 @@ public class ProvidedThunderServer implements ThunderServer {
                                         //Handshaking
                                         PacketHandshake packetHandshake = new PacketHandshake();
 
-                                        thunderServer.sendPacket(packetHandshake, thunderSession, new Consumer<Response>() {
-                                            @Override
-                                            public void accept(Response response) {
+                                        thunderServer.sendPacket(packetHandshake, thunderSession, response -> {
 
+                                            try {
                                                 String sessionId = response.get(0).asString();
                                                 UUID uuid = response.get(1).asUUID();
                                                 long time = response.get(2).asLong();
@@ -147,6 +151,8 @@ public class ProvidedThunderServer implements ThunderServer {
                                                 thunderSession.setHandShaked(true);
 
                                                 session.getConnectedSessions().add(thunderSession);
+                                            } catch (Exception e) {
+                                                LOGGER.log(LogLevel.ERROR, "Coulnd't get Respond of HandShakePacket from ThunderConnection!");
                                             }
                                         });
 
