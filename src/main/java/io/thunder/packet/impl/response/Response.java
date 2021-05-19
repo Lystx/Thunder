@@ -1,7 +1,7 @@
 package io.thunder.packet.impl.response;
 
-import io.vson.elements.object.VsonObject;
-import io.vson.enums.FileFormat;
+import io.thunder.utils.vson.elements.object.VsonObject;
+import io.thunder.utils.vson.enums.FileFormat;
 import lombok.Getter;
 import lombok.SneakyThrows;
 

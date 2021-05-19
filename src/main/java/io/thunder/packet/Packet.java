@@ -9,8 +9,8 @@ import io.thunder.packet.impl.EmptyPacket;
 import io.thunder.utils.logger.LogLevel;
 import io.thunder.packet.impl.response.PacketRespond;
 import io.thunder.packet.impl.response.ResponseStatus;
-import io.vson.elements.object.VsonObject;
-import io.vson.enums.FileFormat;
+import io.thunder.utils.vson.elements.object.VsonObject;
+import io.thunder.utils.vson.enums.FileFormat;
 import lombok.Getter;
 import lombok.Setter;
 

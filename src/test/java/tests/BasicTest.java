@@ -43,6 +43,7 @@ public class BasicTest {
             @Override
             public void handleConnect(ThunderSession session) {
                 System.out.println("[Client] Connected to ThunderServer (" + System.currentTimeMillis() + ")");
+
             }
 
             @Override

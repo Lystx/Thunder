@@ -26,8 +26,6 @@ import io.thunder.packet.handler.PacketAdapter;
 import io.thunder.packet.impl.object.ObjectHandler;
 import io.thunder.packet.impl.object.PacketObject;
 import io.thunder.utils.objects.ThunderAction;
-import io.vson.elements.object.VsonObject;
-import io.vson.enums.FileFormat;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -282,15 +280,12 @@ public class ProvidedThunderClient implements ThunderClient, PacketHandler {
      * @param object the objects
      */
     @Override
-    public synchronized void sendObject(Object object) {
+    public synchronized void sendObject(Serializable object) {
         if (!this.isConnected()) {
             return;
         }
-        if (!Serializable.class.isAssignableFrom(object.getClass())) {
-            LOGGER.log(LogLevel.ERROR, "(Server-Side) ThunderServer couldn't send object from class " + object.getClass().getSimpleName() + " because it doesn't implements java.io.Serializable !");
-            return;
-        }
-        this.sendPacket(new PacketObject<>((Serializable) object, System.currentTimeMillis()));
+        Serializable.class.isAssignableFrom(object.getClass());
+        this.sendPacket(new PacketObject<>(object, System.currentTimeMillis()));
     }
 
     /**
@@ -364,41 +359,28 @@ public class ProvidedThunderClient implements ThunderClient, PacketHandler {
     @Override
     public synchronized String toString() {
 
-        VsonObject vsonObject = new VsonObject();
+        StringBuilder sb = new StringBuilder();
+        sb.append("-------------[ThunderClient]------------").append("\n");
+        sb.append("Session-Name : " + session.getSessionId()).append("\n");
+        sb.append("Session-UUID : " + session.getUniqueId()).append("\n");
+        sb.append("Session-Start : " + session.getStartTime()).append("\n");
+        sb.append("Session-Handshaked : " + session.isHandShaked()).append("\n");
+        sb.append("--------------------").append("\n");
+        sb.append("Connection-Type : " + "CLIENT").append("\n");
+        sb.append("Connection-Channel-RemoteAddress : " + this.channel.remoteAddress().toString()).append("\n");
+        sb.append("Connection-Channel-LocalAddress : " + this.channel.localAddress().toString()).append("\n");
+        sb.append("Connection-Channel-Valid : " + this.channel.isValid()).append("\n");
+        sb.append("Connection-Channel-Opened : " + this.channel.isOpen()).append("\n");
+        sb.append("--------------------").append("\n");
+        sb.append("General-Listner : " + (this.getThunderListener() != null)).append("\n");
+        sb.append("General-ObjectHandlers : " + this.getObjectHandlers().size()).append("\n");
+        sb.append("--------------------").append("\n");
+        sb.append("Codec-PreDecoder : " + preDecoder.getClass().getName()).append("\n");
+        sb.append("Codec-Decoder : " + decoder.getClass().getName()).append("\n");
+        sb.append("Codec-Encoder : " + encoder.getClass().getName()).append("\n");
+        sb.append("-------------[ThunderClient]------------");
 
-        vsonObject.append("session",
-                new VsonObject()
-                        .append("name", session.getSessionId())
-                        .append("uniqueId", session.getUniqueId())
-                        .append("startTime", session.getStartTime())
-                        .append("handShaked", session.isHandShaked())
-        );
-        vsonObject.append("connection",
-                new VsonObject()
-                        .append("type", "CLIENT")
-                        .append("channel",
-                                new VsonObject()
-                                        .append("remoteAddress", this.channel.remoteAddress().toString())
-                                        .append("localAddress", this.channel.localAddress().toString())
-                                        .append("valid", this.channel.isValid())
-                                        .append("open", this.channel.isOpen())
-                        )
-        );
-
-        vsonObject.append("general",
-                new VsonObject()
-                        .append("listener", this.getThunderListener() != null)
-                        .append("objectHandlers", this.getObjectHandlers().size())
-        );
-
-        vsonObject.append("codec",
-                new VsonObject()
-                        .append("preDecoder", preDecoder.getClass().getName())
-                        .append("decoder", decoder.getClass().getName())
-                        .append("encoder", encoder.getClass().getName())
-        );
-
-        return vsonObject.toString(FileFormat.JSON);
+        return sb.toString();
     }
 
     /**

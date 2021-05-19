@@ -2,41 +2,35 @@ package packets;
 
 import io.thunder.packet.Packet;
 import io.thunder.packet.PacketBuffer;
+import io.thunder.utils.vson.annotation.other.Vson;
+import io.thunder.utils.vson.elements.object.VsonObject;
+import io.thunder.utils.vson.tree.VsonTree;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import utils.ExampleObject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 @Getter @AllArgsConstructor
 public class ExampleObjectPacket extends Packet {
 
     private ExampleObject exampleObject;
 
-    @Override
+    @Override @SneakyThrows
     public void write(PacketBuffer buf) {
-        buf.writeString(exampleObject.getName());
-        buf.writeUUID(exampleObject.getUniqueId());
-        buf.writeLong(exampleObject.getStamp());
 
-        buf.writeInt(exampleObject.getData().size());
-        for (String datum : exampleObject.getData()) {
-            buf.writeString(datum);
-        }
+
+        String exampleO = VsonTree.newTree(exampleObject).toVson().toString();
+
+        buf.writeString(exampleO);
     }
 
-    @Override
+    @Override @SneakyThrows
     public void read(PacketBuffer buf) {
-        String name = buf.readString();
-        UUID uniqueId = buf.readUUID();
-        long stamp = buf.readLong();
-        int size = buf.readInt();
-        List<String> data = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            data.add(buf.readString());
-        }
-        exampleObject = new ExampleObject(name, uniqueId, stamp, data);
+
+        String string = buf.readString();
+
+        System.out.println(string);
+
+        exampleObject = VsonTree.newTree(ExampleObject.class).from(new VsonObject(string), ExampleObject.class);
     }
 }

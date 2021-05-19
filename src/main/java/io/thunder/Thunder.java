@@ -1,5 +1,6 @@
 package io.thunder;
 
+import com.google.gson.Gson;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
 import io.thunder.connection.extra.ThunderListener;

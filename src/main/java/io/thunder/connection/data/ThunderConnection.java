@@ -23,6 +23,7 @@ import io.thunder.utils.logger.LogLevel;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -90,7 +91,7 @@ public interface ThunderConnection {
      *
      * @param object the objects
      */
-    void sendObject(Object object);
+    void sendObject(Serializable object);
 
     default ThunderConnection addPacketHandler(PacketHandler packetHandler) {
         this.getPacketAdapter().addHandler(packetHandler);

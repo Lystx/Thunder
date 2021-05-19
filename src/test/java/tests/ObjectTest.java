@@ -32,6 +32,9 @@ public class ObjectTest {
             public void handle(Packet packet) {
                 if (packet instanceof ExampleObjectPacket) {
                     ExampleObjectPacket exampleObjectPacket = (ExampleObjectPacket)packet;
+                    System.out.println(exampleObjectPacket.getExampleObject().getData());
+                    System.out.println(exampleObjectPacket.getExampleObject().getName());
+                    System.out.println(exampleObjectPacket.getExampleObject().getStamp());
                     System.out.println("[Packet] Received exampleObject in " + packet.getProcessingTime() + "ms");
                     exampleObjectPacket.respond(ResponseStatus.SUCCESS, packet.getProcessingTime() + "ms");
                 }

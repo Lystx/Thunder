@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Thunder">
+    <output-path>$PROJECT_DIR$/../../dependencies</output-path>
+    <root id="archive" name="Thunder.jar">
+      <element id="module-output" name="Thunder" />
+    </root>
+  </artifact>
+</component>
