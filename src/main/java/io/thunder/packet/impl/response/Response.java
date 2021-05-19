@@ -35,13 +35,15 @@ public class Response {
      */
     private final long processingTime;
 
-
+    /**
+     * The position of the current object youre trying to get
+     */
     private int pos = -1;
 
     /**
      * If the Request has timed out
      */
-    private boolean timedOut;
+    private final boolean timedOut;
 
     /**
      * Settign all values using a {@link PacketRespond}
@@ -66,7 +68,6 @@ public class Response {
     public Response(ResponseStatus status) {
         this(new PacketRespond(status));
     }
-
 
     /**
      * Sets current position and prepares to use all the other Methods like {@link Response#asString()} etc.

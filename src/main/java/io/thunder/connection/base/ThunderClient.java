@@ -5,7 +5,7 @@ package io.thunder.connection.base;
 import io.thunder.connection.data.ThunderConnection;
 import io.thunder.impl.connection.ProvidedThunderClient;
 import io.thunder.packet.Packet;
-import io.thunder.utils.ThunderAction;
+import io.thunder.utils.objects.ThunderAction;
 import lombok.SneakyThrows;
 
 import java.io.DataOutputStream;

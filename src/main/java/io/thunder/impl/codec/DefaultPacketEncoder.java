@@ -3,7 +3,7 @@ package io.thunder.impl.codec;
 import io.thunder.Thunder;
 import io.thunder.connection.codec.PacketEncoder;
 import io.thunder.packet.PacketBuffer;
-import io.thunder.utils.LogLevel;
+import io.thunder.utils.logger.LogLevel;
 import io.thunder.packet.Packet;
 
 import java.io.DataOutputStream;

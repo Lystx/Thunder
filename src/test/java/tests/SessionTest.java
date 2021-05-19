@@ -7,7 +7,7 @@ import io.thunder.connection.extra.ThunderListener;
 import io.thunder.connection.base.ThunderSession;
 import io.thunder.packet.Packet;
 import io.thunder.packet.impl.PacketHandshake;
-import io.thunder.utils.LogLevel;
+import io.thunder.utils.logger.LogLevel;
 
 public class SessionTest {
 

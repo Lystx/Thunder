@@ -18,7 +18,7 @@ import io.thunder.packet.impl.object.ObjectHandler;
 import io.thunder.packet.impl.response.PacketRespond;
 import io.thunder.packet.impl.response.Response;
 import io.thunder.packet.impl.response.ResponseStatus;
-import io.thunder.utils.LogLevel;
+import io.thunder.utils.logger.LogLevel;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

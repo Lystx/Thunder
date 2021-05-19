@@ -4,7 +4,7 @@ package io.thunder.impl.other;
 
 import io.thunder.packet.Packet;
 import io.thunder.packet.PacketBuffer;
-import io.thunder.utils.ThunderObject;
+import io.thunder.utils.objects.ThunderObject;
 import io.thunder.utils.ThunderUtils;
 import io.vson.VsonValue;
 import io.vson.annotation.other.Vson;

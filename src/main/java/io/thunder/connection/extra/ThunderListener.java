@@ -10,7 +10,6 @@ import io.thunder.connection.base.ThunderSession;
 import io.thunder.impl.other.ProvidedPacketBuffer;
 import io.thunder.packet.PacketBuffer;
 import io.thunder.packet.impl.PacketHandshake;
-import io.thunder.utils.LogLevel;
 import io.thunder.packet.*;
 import lombok.SneakyThrows;
 

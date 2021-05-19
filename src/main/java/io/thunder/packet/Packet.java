@@ -6,7 +6,7 @@ import io.thunder.connection.data.ThunderConnection;
 import io.thunder.connection.data.ThunderChannel;
 import io.thunder.impl.other.ProvidedPacketBuffer;
 import io.thunder.packet.impl.EmptyPacket;
-import io.thunder.utils.LogLevel;
+import io.thunder.utils.logger.LogLevel;
 import io.thunder.packet.impl.response.PacketRespond;
 import io.thunder.packet.impl.response.ResponseStatus;
 import io.vson.elements.object.VsonObject;
@@ -134,11 +134,14 @@ public abstract class Packet {
      */
     public void respond(PacketRespond packet) {
         //Sends the packet over the connection of this Packet
-        this.channel.processOut(deepCopy(packet));
+        PacketRespond packetRespond = this.deepCopy(packet);
+        this.channel.processOut(packetRespond);
     }
 
     /**
-     * DeepCopies a Packet
+     * DeepCopies a Packet but does not copy the data-array
+     * So all the values (as UUID for response) are the same but the Packet
+     * data and values stay the same
      *
      * @param packet the packet to copy
      * @return copied Packet

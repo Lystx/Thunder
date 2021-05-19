@@ -5,7 +5,6 @@ import io.thunder.connection.codec.PacketDecoder;
 import io.thunder.connection.data.ThunderConnection;
 import io.thunder.packet.Packet;
 import io.thunder.packet.PacketBuffer;
-import io.thunder.utils.ErrorHandler;
 import io.thunder.utils.ThunderUtils;
 
 public class DefaultPacketDecoder extends PacketDecoder {

@@ -3,11 +3,13 @@ package io.thunder.packet.impl.object;
 import io.thunder.connection.data.ThunderConnection;
 import io.thunder.packet.Packet;
 import io.thunder.packet.PacketBuffer;
-import io.thunder.utils.Serializer;
+import io.thunder.utils.objects.Serializer;
 import lombok.Getter;
 
+import java.io.Serializable;
+
 @Getter
-public class PacketObject<T> extends Packet {
+public class PacketObject<T extends Serializable> extends Packet {
 
     private T object;
     private long time;

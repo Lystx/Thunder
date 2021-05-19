@@ -4,12 +4,10 @@ import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
 import io.thunder.connection.extra.ThunderListener;
 import io.thunder.packet.Packet;
-import io.thunder.utils.ErrorHandler;
-import io.thunder.utils.LogLevel;
-import io.thunder.utils.Logger;
+import io.thunder.connection.ErrorHandler;
+import io.thunder.utils.logger.LogLevel;
+import io.thunder.utils.logger.Logger;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -77,7 +75,6 @@ public class Thunder {
         thunderClient.addSessionListener(thunderListener == null ? ThunderListener.empty() : thunderListener);
         return thunderClient;
     }
-
 
     /**
      * Creates a {@link ThunderServer} with

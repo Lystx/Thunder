@@ -9,7 +9,7 @@ import io.thunder.packet.handler.PacketHandler;
 import io.thunder.packet.impl.response.PacketRespond;
 import io.thunder.packet.impl.response.Response;
 import io.thunder.packet.impl.response.ResponseStatus;
-import io.thunder.utils.ThunderAction;
+import io.thunder.utils.objects.ThunderAction;
 
 import java.net.ServerSocket;
 import java.util.List;

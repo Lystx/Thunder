@@ -1,7 +1,7 @@
 package io.thunder.packet;
 
 import io.thunder.impl.other.ProvidedPacketBuffer;
-import io.thunder.utils.ThunderObject;
+import io.thunder.utils.objects.ThunderObject;
 import lombok.SneakyThrows;
 
 import java.io.ByteArrayOutputStream;

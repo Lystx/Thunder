@@ -1,4 +1,4 @@
-package io.thunder.utils;
+package io.thunder.connection;
 
 import io.thunder.packet.Packet;
 

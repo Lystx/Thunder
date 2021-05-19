@@ -7,7 +7,7 @@ import io.thunder.connection.base.ThunderServer;
 import io.thunder.packet.Packet;
 import io.thunder.packet.handler.PacketHandler;
 import io.thunder.packet.impl.response.ResponseStatus;
-import io.thunder.utils.LogLevel;
+import io.thunder.utils.logger.LogLevel;
 import io.thunder.packet.impl.object.ObjectHandler;
 import packets.ExampleObjectPacket;
 import utils.ExampleObject;

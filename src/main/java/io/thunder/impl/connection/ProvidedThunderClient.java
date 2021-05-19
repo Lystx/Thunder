@@ -19,13 +19,13 @@ import io.thunder.impl.other.ProvidedThunderSession;
 import io.thunder.packet.handler.PacketHandler;
 import io.thunder.packet.impl.PacketHandshake;
 import io.thunder.packet.impl.response.ResponseStatus;
-import io.thunder.utils.LogLevel;
+import io.thunder.utils.logger.LogLevel;
 import io.thunder.packet.Packet;
 import io.thunder.impl.other.ProvidedPacketBuffer;
 import io.thunder.packet.handler.PacketAdapter;
 import io.thunder.packet.impl.object.ObjectHandler;
 import io.thunder.packet.impl.object.PacketObject;
-import io.thunder.utils.ThunderAction;
+import io.thunder.utils.objects.ThunderAction;
 import io.vson.elements.object.VsonObject;
 import io.vson.enums.FileFormat;
 import lombok.Getter;
@@ -290,7 +290,7 @@ public class ProvidedThunderClient implements ThunderClient, PacketHandler {
             LOGGER.log(LogLevel.ERROR, "(Server-Side) ThunderServer couldn't send object from class " + object.getClass().getSimpleName() + " because it doesn't implements java.io.Serializable !");
             return;
         }
-        this.sendPacket(new PacketObject<>(object, System.currentTimeMillis()));
+        this.sendPacket(new PacketObject<>((Serializable) object, System.currentTimeMillis()));
     }
 
     /**

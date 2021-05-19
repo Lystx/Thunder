@@ -1,7 +1,7 @@
 package io.thunder.impl.other;
 
 import io.thunder.Thunder;
-import io.thunder.utils.ThunderAction;
+import io.thunder.utils.objects.ThunderAction;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 

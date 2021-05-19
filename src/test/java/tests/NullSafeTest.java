@@ -6,7 +6,7 @@ import io.thunder.connection.base.ThunderServer;
 import io.thunder.impl.other.DefaultPacketCompressor;
 import io.thunder.packet.Packet;
 import io.thunder.packet.handler.PacketHandler;
-import io.thunder.utils.LogLevel;
+import io.thunder.utils.logger.LogLevel;
 import packets.NullSafeExamplePacket;
 
 import java.util.function.Consumer;

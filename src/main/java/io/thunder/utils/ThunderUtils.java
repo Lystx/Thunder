@@ -59,6 +59,5 @@ public class ThunderUtils {
         } catch (Exception e) {
             return null;
         }
-
     }
 }
