@@ -4,7 +4,6 @@ import io.thunder.connection.data.ThunderConnection;
 import io.thunder.packet.Packet;
 import io.thunder.packet.PacketBuffer;
 import io.thunder.utils.Serializer;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter

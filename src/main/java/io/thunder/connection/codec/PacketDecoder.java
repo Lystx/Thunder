@@ -7,5 +7,5 @@ import io.thunder.packet.PacketBuffer;
 
 public abstract class PacketDecoder extends PacketCodec {
 
-    public abstract Packet decode(Packet packet, PacketBuffer buf, ThunderConnection thunderConnection) throws Exception;
+    public abstract Packet decode(Packet packet, PacketBuffer buf, ThunderConnection thunderConnection, String _class) throws Exception;
 }

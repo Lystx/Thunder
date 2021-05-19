@@ -5,7 +5,6 @@ import io.thunder.connection.codec.PacketCodec;
 import io.thunder.connection.codec.PacketDecoder;
 import io.thunder.connection.codec.PacketEncoder;
 import io.thunder.connection.codec.PacketPreDecoder;
-import io.thunder.connection.data.ThunderConnection;
 import io.thunder.connection.extra.PacketCompressor;
 import io.thunder.impl.codec.DefaultPacketDecoder;
 import io.thunder.impl.codec.DefaultPacketEncoder;
@@ -22,7 +21,7 @@ import io.thunder.packet.impl.PacketHandshake;
 import io.thunder.packet.impl.response.ResponseStatus;
 import io.thunder.utils.LogLevel;
 import io.thunder.packet.Packet;
-import io.thunder.packet.PacketBuffer;
+import io.thunder.impl.other.ProvidedPacketBuffer;
 import io.thunder.packet.handler.PacketAdapter;
 import io.thunder.packet.impl.object.ObjectHandler;
 import io.thunder.packet.impl.object.PacketObject;
@@ -180,7 +179,7 @@ public class ProvidedThunderClient implements ThunderClient, PacketHandler {
             } catch (Exception e) {
                 LOGGER.log(LogLevel.ERROR, "(Client-Side) ThunderClient wasn't able to connect to " + host + ":" + port + "!");
                 if (LOGGER.getLogLevel().equals(LogLevel.ERROR)) {
-                    e.printStackTrace();
+                    Thunder.ERROR_HANDLER.onError(e);
                 }
             }
         }, this);
@@ -217,7 +216,7 @@ public class ProvidedThunderClient implements ThunderClient, PacketHandler {
                 Packet packet;
                 try {
                     //PreDecoding packet to get a raw object
-                    packet = this.preDecoder.decode(new PacketBuffer(dataInputStream));
+                    packet = this.preDecoder.decode(ProvidedPacketBuffer.newInstance(dataInputStream));
                 } catch (Exception e) {
                     //Couldn't encode this will break everything so disconnect!
                     this.disconnect();
@@ -232,8 +231,9 @@ public class ProvidedThunderClient implements ThunderClient, PacketHandler {
                         //Handling the packet via
                         thunderListener.readPacket(packet, ProvidedThunderClient.this);
                     } catch (Exception e) {
-                        LOGGER.log(LogLevel.ERROR, "(Client-Side) ThunderClient was unable to handle packet " + packet);
-                        e.printStackTrace();
+                        LOGGER.log(LogLevel.ERROR, "(Client-Side) ThunderClient was unable to handle packet " + packet.getClass().getSimpleName());
+                        LOGGER.log(LogLevel.ERROR, "Exception: ");
+                        Thunder.ERROR_HANDLER.onError(e);
                     }
                 }
             }

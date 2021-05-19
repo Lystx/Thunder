@@ -1,5 +1,6 @@
 package io.thunder.connection.data;
 
+import io.thunder.Thunder;
 import io.thunder.connection.codec.PacketCodec;
 import io.thunder.connection.codec.PacketDecoder;
 import io.thunder.connection.codec.PacketEncoder;
@@ -9,6 +10,7 @@ import io.thunder.connection.base.ThunderServer;
 import io.thunder.connection.extra.PacketCompressor;
 import io.thunder.connection.extra.ThunderListener;
 import io.thunder.connection.base.ThunderSession;
+import io.thunder.impl.other.ProvidedPacketBuffer;
 import io.thunder.packet.*;
 import io.thunder.packet.handler.PacketAdapter;
 import io.thunder.packet.handler.PacketHandler;
@@ -16,6 +18,7 @@ import io.thunder.packet.impl.object.ObjectHandler;
 import io.thunder.packet.impl.response.PacketRespond;
 import io.thunder.packet.impl.response.Response;
 import io.thunder.packet.impl.response.ResponseStatus;
+import io.thunder.utils.LogLevel;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -102,9 +105,16 @@ public interface ThunderConnection {
      * @param consumer the Consumer to work with
      */
     default void sendPacket(Packet packet, Consumer<Response> consumer) {
-        consumer.accept(this.transferToResponse(packet));
+        this.sendPacket(packet, consumer, 3000);
     }
 
+    default void sendPacket(Packet packet, Consumer<Response> consumer, int timeOut) {
+        Thunder.EXECUTOR_SERVICE.execute(() -> consumer.accept(this.transferToResponse(packet, timeOut)));
+    }
+
+    default Response transferToResponse(Packet pp) {
+        return this.transferToResponse(pp, 3000);
+    }
     /**
      * Calls the {@link ThunderConnection#sendPacket(Packet)} Method
      * This will wait for the given Packet to respond
@@ -114,33 +124,36 @@ public interface ThunderConnection {
      * @param pp the Packet await Response for
      * @return the Response the Packet gets
      */
-    default Response transferToResponse(Packet pp) {
+    default Response transferToResponse(Packet pp, int timeOut) {
         Response[] response = {null};
         getPacketAdapter().addHandler(new PacketHandler() {
             @Override
             public void handle(Packet packet) {
+                Thunder.LOGGER.log(LogLevel.DEBUG, "Response with UUID " + pp.getUniqueId() + " has received Packet " + packet.getClass().getSimpleName() + " with UUID " + packet.getUniqueId() + "!");
                 if (packet instanceof PacketRespond) {
                     PacketRespond packetRespond = (PacketRespond)packet;
                     if (packet.getUniqueId().equals(pp.getUniqueId())) {
                         response[0] = new Response(packetRespond);
                         getPacketAdapter().removeHandler(this);
+                        Thunder.LOGGER.log(LogLevel.DEBUG, "Response with UUID " + pp.getUniqueId() + " has set Response and removed Handler!");
                     }
                 }
             }
         });
 
         this.sendPacket(pp);
+        Thunder.LOGGER.log(LogLevel.DEBUG, "Response with UUID " + pp.getUniqueId() + " has sent Packet!");
 
         int count = 0;
-        while (response[0] == null && count++ < 3000) {
+        while (response[0] == null && count++ < timeOut) {
             try {
                 Thread.sleep(0, 500000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                e.printStackTrace();
             }
         }
-        if (count >= 2999) {
+        if (count >= timeOut) {
+            Thunder.LOGGER.log(LogLevel.ERROR, "Response with UUID " + pp.getUniqueId() + " has timed out :(");
             response[0] = new Response(new PacketRespond("The Request timed out", ResponseStatus.FAILED));
         }
         return response[0];
@@ -234,7 +247,7 @@ public interface ThunderConnection {
                 try {
                     packet = packetCompressor.decompress(packet);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Thunder.ERROR_HANDLER.onPacketFailure(packet, packet.getClass().getName(), e);
                 }
             }
         }
@@ -242,9 +255,9 @@ public interface ThunderConnection {
 
         PacketEncoder encoder = packet.getConnection().getEncoder();
         try {
-            encoder.encode(packet, dataOutputStream, new PacketBuffer());
+            encoder.encode(packet, dataOutputStream, ProvidedPacketBuffer.newInstance());
         } catch (Exception e) {
-            e.printStackTrace();
+            Thunder.ERROR_HANDLER.onPacketFailure(packet, packet.getClass().getName(), e);
         }
 
     }

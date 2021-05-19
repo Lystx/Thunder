@@ -7,6 +7,8 @@ import io.thunder.connection.data.ThunderConnection;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
 import io.thunder.connection.base.ThunderSession;
+import io.thunder.impl.other.ProvidedPacketBuffer;
+import io.thunder.packet.PacketBuffer;
 import io.thunder.packet.impl.PacketHandshake;
 import io.thunder.utils.LogLevel;
 import io.thunder.packet.*;
@@ -69,9 +71,17 @@ public interface ThunderListener {
      */
     @SneakyThrows
     default void readPacket(Packet packet, ThunderConnection thunderConnection) throws IOException {
-        Packet decodedPacket = thunderConnection.getDecoder().decode(packet, new PacketBuffer(packet), thunderConnection);
+        Packet decodedPacket;
+        PacketBuffer packetBuffer = ProvidedPacketBuffer.newInstance(packet);
+        String _class = packetBuffer.readString();
+        try {
+            decodedPacket = thunderConnection.getDecoder().decode(packet, packetBuffer, thunderConnection, _class);
+        } catch (Exception e) {
+            Thunder.ERROR_HANDLER.onPacketFailure(packet, _class, e);
+            return;
+        }
         if (decodedPacket == null) {
-            Thunder.LOGGER.log(LogLevel.ERROR, "A Packet could not be decoded and was marked as null (Class: " + packet.getClass().getName() + ")");
+            Thunder.ERROR_HANDLER.onPacketFailure(packet, _class, new NullPointerException("The Packet was null"));
             return;
         }
 

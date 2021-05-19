@@ -41,7 +41,11 @@ public class ClientThunderChannel implements ThunderChannel {
         packet.setChannel(thunderClient.getChannel());
         packet.setConnection(this.thunderClient);
 
-        ThunderConnection.processOut(packet, this.getOut());
+        try {
+            ThunderConnection.processOut(packet, this.getOut());
+        } catch (Exception e) {
+            //Already closed
+        }
     }
 
     /**

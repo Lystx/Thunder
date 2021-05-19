@@ -1,6 +1,7 @@
 package io.thunder.utils;
 
 import com.sun.org.apache.xml.internal.security.utils.Base64;
+import io.thunder.Thunder;
 import lombok.AllArgsConstructor;
 
 import java.io.ByteArrayInputStream;
@@ -33,7 +34,7 @@ public class Serializer<T> {
             so.flush();
             return Base64.encode(bo.toByteArray());
         } catch (Exception e) {
-            e.printStackTrace();
+            Thunder.ERROR_HANDLER.onError(e);
         }
         return null;
     }
@@ -51,7 +52,7 @@ public class Serializer<T> {
             ObjectInputStream si = new ObjectInputStream(bi);
             return (T) si.readObject();
         } catch (Exception e) {
-            e.printStackTrace();
+            Thunder.ERROR_HANDLER.onError(e);
         }
         return null;
     }

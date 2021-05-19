@@ -106,7 +106,6 @@ public interface ThunderServer extends ThunderConnection {
                 Thread.sleep(0, 500000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                e.printStackTrace();
             }
         }
         if (count >= 2999) {

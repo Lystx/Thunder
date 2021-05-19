@@ -2,6 +2,7 @@ package io.thunder.packet.handler;
 
 import io.thunder.packet.Packet;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class PacketAdapter {
      * @param packet the Packet to handle
      */
     public void handle(Packet packet) {
-        for (PacketHandler packetHandler : this.packetHandlers) {
+        for (PacketHandler packetHandler : new ArrayList<>(this.packetHandlers)) {
             packetHandler.handle(packet);
         }
     }

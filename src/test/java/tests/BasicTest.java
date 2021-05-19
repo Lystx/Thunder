@@ -40,6 +40,8 @@ public class BasicTest {
         });
 
 
+        thunderServer.addCompressor(new DefaultPacketCompressor());
+
         thunderClient.addSessionListener(new ThunderListener() {
             @Override
             public void handleConnect(ThunderSession session) {

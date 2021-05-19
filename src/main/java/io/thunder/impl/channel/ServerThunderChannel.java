@@ -55,14 +55,19 @@ public class ServerThunderChannel implements ThunderChannel {
         packet.setConnection(this.thunderServer);
 
         for (ThunderClient client : this.thunderServer.getClients()) {
-            ThunderConnection.processOut(
-                    packet,
-                    new DataOutputStream(
-                            client
-                                    .getSocket()
-                                    .getOutputStream()
-                    )
-            );
+            try {
+
+                ThunderConnection.processOut(
+                        packet,
+                        new DataOutputStream(
+                                client
+                                        .getSocket()
+                                        .getOutputStream()
+                        )
+                );
+            } catch (Exception e) {
+                //Server already closed ignoring
+            }
         }
     }
 

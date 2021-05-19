@@ -223,11 +223,10 @@ public class ProvidedThunderServer implements ThunderServer {
                     LOGGER.log(LogLevel.DEBUG, "(Server-Side) Server-Listener-Thread stopped!");
                 });
             } catch (Exception e) {
-                if (LOGGER.getLogLevel().equals(LogLevel.ERROR) || LOGGER.getLogLevel().equals(LogLevel.ALL)) {
-                    LOGGER.log(LogLevel.ERROR, "(Server-Side) Server couldn't start! :");
-                    e.printStackTrace();
+                LOGGER.log(LogLevel.ERROR, "(Server-Side) Server couldn't start! :");
+                if (LOGGER.getLogLevel().equals(LogLevel.ERROR)) {
+                    Thunder.ERROR_HANDLER.onError(e);
                 }
-
             }
         }, this);
     }

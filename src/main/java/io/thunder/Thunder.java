@@ -3,8 +3,13 @@ package io.thunder;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
 import io.thunder.connection.extra.ThunderListener;
+import io.thunder.packet.Packet;
+import io.thunder.utils.ErrorHandler;
 import io.thunder.utils.LogLevel;
 import io.thunder.utils.Logger;
+
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -17,6 +22,21 @@ import java.util.concurrent.Executors;
 public class Thunder {
 
     public static final Logger LOGGER = new Logger(); //Custom logger for Thunder
+    public static ErrorHandler ERROR_HANDLER = new ErrorHandler() {
+        @Override
+        public void onError(Exception e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onPacketFailure(Packet packet, String _class, Exception e) {
+            Thunder.LOGGER.log(LogLevel.ERROR, "A Packet could not be decoded and was marked as null (Class: " + _class + ")");
+            Thunder.LOGGER.log(LogLevel.ERROR, "Exception: ");
+            if (Thunder.LOGGER.getLogLevel().equals(LogLevel.ERROR) && e != null) {
+                onError(e);
+            }
+        }
+    };
 
     public static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool(); //ExecutorService to make things run async
 
@@ -29,6 +49,10 @@ public class Thunder {
      */
     public synchronized static void setLogging(LogLevel logging) {
         LOGGER.setLogLevel(logging);
+    }
+
+    public static void addHandler(ErrorHandler errorHandler) {
+        ERROR_HANDLER = errorHandler;
     }
 
     /**

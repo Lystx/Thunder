@@ -5,6 +5,7 @@ import io.vson.enums.FileFormat;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -38,6 +39,11 @@ public class Response {
     private int pos = -1;
 
     /**
+     * If the Request has timed out
+     */
+    private boolean timedOut;
+
+    /**
      * Settign all values using a {@link PacketRespond}
      *
      * @param respond the packet
@@ -47,6 +53,8 @@ public class Response {
         this.status = respond.getStatus();
         this.message = respond.getMessage();
         this.processingTime = respond.getProcessingTime();
+        this.timedOut = this.message.equalsIgnoreCase("The Request timed out");
+
     }
 
     /**
@@ -123,6 +131,18 @@ public class Response {
 
     /**
      * This transforms the Object of the given position (before marked at {@link Response#get(int)} ) to
+     * your a List containing the tClass Objects
+     *
+     * @param tClass the class of the object
+     * @return value
+     */
+    @SneakyThrows
+    public <T> List<T> asList(Class<T> tClass) {
+        return new VsonObject(this.message).getList(String.valueOf(this.pos), tClass);
+    }
+
+    /**
+     * This transforms the Object of the given position (before marked at {@link Response#get(int)} ) to
      * your Class<T> to receive the object you want
      *
      * @param tClass the class of the object
@@ -149,4 +169,49 @@ public class Response {
         return vsonObject.toString(FileFormat.JSON);
     }
 
+
+
+    /**
+     * Returns an Empty response without being able to return
+     * a given Object
+     * @return iResponse
+     */
+    public <T> IResponse<T> toIResponse() {
+        return this.toIResponse(null);
+    }
+
+    /**
+     * Transforms this {@link Response} to a {@link IResponse}
+     *
+     * @param object the object to return in the {@link IResponse}
+     * @return iResponse
+     */
+    public <T> IResponse<T> toIResponse(T object) {
+        return new IResponse<T>() {
+            @Override
+            public T get() {
+                return object;
+            }
+
+            @Override
+            public ResponseStatus getStatus() {
+                return status;
+            }
+
+            @Override
+            public UUID getUniqueId() {
+                return respondPacket.getUniqueId();
+            }
+
+            @Override
+            public String getMessage() {
+                return Response.this.getMessage();
+            }
+
+            @Override
+            public Response raw() {
+                return Response.this;
+            }
+        };
+    }
 }

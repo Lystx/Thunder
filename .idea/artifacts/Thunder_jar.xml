@@ -1,9 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="Thunder:jar">
-    <output-path>$PROJECT_DIR$/../../dependencies</output-path>
-    <root id="archive" name="Thunder.jar">
-      <element id="module-output" name="Thunder" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/libs/vson-1.0-final.jar" path-in-jar="/" />
-    </root>
-  </artifact>
-</component>

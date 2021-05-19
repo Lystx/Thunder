@@ -4,6 +4,8 @@ package io.thunder.packet;
 import io.thunder.Thunder;
 import io.thunder.connection.data.ThunderConnection;
 import io.thunder.connection.data.ThunderChannel;
+import io.thunder.impl.other.ProvidedPacketBuffer;
+import io.thunder.packet.impl.EmptyPacket;
 import io.thunder.utils.LogLevel;
 import io.thunder.packet.impl.response.PacketRespond;
 import io.thunder.packet.impl.response.ResponseStatus;
@@ -19,7 +21,7 @@ import java.util.*;
  * This is class is the better usage
  * of (de-)serializing Packet-Data
  *
- * You have to work with the {@link PacketBuffer} to (de-)serialize your
+ * You have to work with the {@link ProvidedPacketBuffer} to (de-)serialize your
  * objects in the packet
  */
 @Setter @Getter
@@ -131,19 +133,27 @@ public abstract class Packet {
      * @param packet  The packets to send as respond
      */
     public void respond(PacketRespond packet) {
+        //Sends the packet over the connection of this Packet
+        this.channel.processOut(deepCopy(packet));
+    }
+
+    /**
+     * DeepCopies a Packet
+     *
+     * @param packet the packet to copy
+     * @return copied Packet
+     */
+    public <T extends Packet> T deepCopy(T packet) {
 
         //Copies the packet 1:1
         packet.setUniqueId(this.uniqueId);
         packet.setChannel(this.channel);
         packet.setConnection(this.connection);
-        packet.setData(this.data);
         packet.setProtocolId(this.protocolId);
         packet.setProtocolVersion(this.protocolVersion);
         packet.setProcessingTime(this.processingTime);
 
-        //Sends the packet over the connection of this Packet
-        this.channel.processOut(packet);
-
+        return packet;
     }
 
     /**
@@ -198,16 +208,6 @@ public abstract class Packet {
 
 
     public static Packet newInstance() {
-        return new Packet() {
-            @Override
-            public void write(PacketBuffer buf) {
-
-            }
-
-            @Override
-            public void read(PacketBuffer buf) {
-
-            }
-        };
+        return new EmptyPacket();
     }
 }

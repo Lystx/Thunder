@@ -2,9 +2,9 @@ package io.thunder.impl.codec;
 
 import io.thunder.Thunder;
 import io.thunder.connection.codec.PacketEncoder;
+import io.thunder.packet.PacketBuffer;
 import io.thunder.utils.LogLevel;
 import io.thunder.packet.Packet;
-import io.thunder.packet.PacketBuffer;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -31,6 +31,7 @@ public class DefaultPacketEncoder extends PacketEncoder {
             dataOutputStream.writeLong(System.currentTimeMillis());
         } catch (IOException e) {
             Thunder.LOGGER.log(LogLevel.ERROR, "Packet couldn't be built (" + getClass().getSimpleName() + ")");
+            Thunder.ERROR_HANDLER.onPacketFailure(packet, packet.getClass().getName(), e);
         }
 
     }
