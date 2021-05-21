@@ -10,6 +10,16 @@ import io.thunder.utils.ThunderUtils;
 public class DefaultPacketDecoder extends PacketDecoder {
 
 
+    /**
+     * Decodes a Packet
+     *
+     * @param packet the packet to decode
+     * @param buf the buf to work with
+     * @param thunderConnection the connection it came from
+     * @param _class the name of the class
+     * @return decoded Packet
+     * @throws Exception if something goes wrong
+     */
     @Override
     public Packet decode(Packet packet, PacketBuffer buf, ThunderConnection thunderConnection, String clazz) throws Exception {
 

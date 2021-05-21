@@ -24,7 +24,11 @@ import java.net.Socket;
  */
 public interface ThunderClient extends ThunderConnection {
 
-
+    /**
+     * Creates a new {@link ThunderClient}
+     *
+     * @return new instance of client
+     */
     static ThunderClient newInstance() {
         return ProvidedThunderClient.newInstance();
     }
@@ -48,7 +52,6 @@ public interface ThunderClient extends ThunderConnection {
      * @return Socket
      */
     Socket getSocket();
-
 
     /**
      * Writes a packet directly into the

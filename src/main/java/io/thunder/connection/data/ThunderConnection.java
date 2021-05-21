@@ -93,6 +93,12 @@ public interface ThunderConnection {
      */
     void sendObject(Serializable object);
 
+    /**
+     * Adds a {@link PacketHandler} by default
+     *
+     * @param packetHandler the handler
+     * @return this connection
+     */
     default ThunderConnection addPacketHandler(PacketHandler packetHandler) {
         this.getPacketAdapter().addHandler(packetHandler);
         return this;

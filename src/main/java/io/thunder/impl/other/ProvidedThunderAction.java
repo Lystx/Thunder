@@ -71,6 +71,12 @@ public class ProvidedThunderAction<T> implements ThunderAction<T> {
         return this.t;
     }
 
+    /**
+     * Performs this action later
+     *
+     * @param time the time (e.g. "1")
+     * @param timeUnit the unit (e.g. "Minute")
+     */
     @Override
     public void performAfter(long time, TimeUnit timeUnit) {
         new Timer().schedule(new TimerTask() {

@@ -18,6 +18,9 @@ import java.net.SocketAddress;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClientThunderChannel implements ThunderChannel {
 
+    /**
+     * The Client the channel belongs to
+     */
     private final ThunderClient thunderClient;
 
     /**

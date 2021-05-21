@@ -95,6 +95,11 @@ public interface ThunderListener {
         this.handlePacketReceive(decodedPacket);
     }
 
+    /**
+     * Returns an Empty {@link ThunderListener}
+     *
+     * @return listener without any functions
+     */
     static ThunderListener empty() {
         return new ThunderListener() {
 

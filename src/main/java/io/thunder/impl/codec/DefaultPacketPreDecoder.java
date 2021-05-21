@@ -8,6 +8,13 @@ import java.util.UUID;
 
 public class DefaultPacketPreDecoder extends PacketPreDecoder {
 
+    /**
+     * Pre-Decodes a Packet from a Buffer
+     *
+     * @param buf the buffer
+     * @return Packet
+     * @throws Exception if something goes wrong
+     */
     @Override
     public Packet decode(PacketBuffer buf) throws Exception {
 

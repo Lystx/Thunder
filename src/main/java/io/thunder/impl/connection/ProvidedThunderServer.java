@@ -44,19 +44,59 @@ import static io.thunder.Thunder.LOGGER;
 @Getter
 public class ProvidedThunderServer implements ThunderServer {
 
-
+    /**
+     * The Socket of the Server
+     */
     private ServerSocket server;
+
+    /**
+     * The connected Clients
+     */
     private final List<ThunderClient> clients;
+
+    /**
+     * The PacketAdapter to handle Packets
+     */
     private final PacketAdapter packetAdapter;
+
+    /**
+     * The session of this server
+     */
     private final ThunderSession session;
+
+    /**
+     * The channel
+     */
     private final ThunderChannel channel;
 
+    /**
+     * The default Encoder
+     */
     private PacketEncoder encoder = new DefaultPacketEncoder();
+
+    /**
+     * The default Decoder
+     */
     private PacketDecoder decoder = new DefaultPacketDecoder();
+
+    /**
+     * The default PreDecoder
+     */
     private PacketPreDecoder preDecoder = new DefaultPacketPreDecoder();
 
+    /**
+     * The Listener to handle
+     */
     private ThunderListener thunderListener;
+
+    /**
+     * The ObjectHandlers to handle Objects
+     */
     private final List<ObjectHandler<?>> objectHandlers;
+
+    /**
+     * The PacketCompressors
+     */
     private final List<PacketCompressor> packetCompressors;
 
 
@@ -146,6 +186,9 @@ public class ProvidedThunderServer implements ThunderServer {
                                                 session.getConnectedSessions().add(thunderSession);
                                             } catch (Exception e) {
                                                 LOGGER.log(LogLevel.ERROR, "Coulnd't get Respond of HandShakePacket from ThunderConnection!");
+                                                if (LOGGER.getLogLevel().equals(LogLevel.ERROR)) {
+                                                    e.printStackTrace();
+                                                }
                                             }
                                         });
 

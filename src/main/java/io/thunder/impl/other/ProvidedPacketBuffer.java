@@ -23,8 +23,19 @@ import java.util.UUID;
 @Getter
 public class ProvidedPacketBuffer implements PacketBuffer {
 
+    /**
+     * The byteOutPut
+     */
     private ByteArrayOutputStream byteArrayOutputStream;
+
+    /**
+     * The dataOutput
+     */
     private DataOutputStream dataOutputStream;
+
+    /**
+     * If nullsafe is activated
+     */
     private boolean nullSafe;
 
     /**
@@ -36,7 +47,11 @@ public class ProvidedPacketBuffer implements PacketBuffer {
         this.nullSafe = false;
     }
 
-
+    /**
+     * Returns a new PacketBuffer
+     *
+     * @return new instance of buffer
+     */
     public static PacketBuffer newInstance() {
         return new ProvidedPacketBuffer();
     }
@@ -369,7 +384,14 @@ public class ProvidedPacketBuffer implements PacketBuffer {
     }
 
 
-
+    /**
+     * Checks if nullSafe is active
+     * if its active and value is null
+     * you can return null
+     * else you can return the not-null-value
+     *
+     * @return boolean
+     */
     private boolean checkNullSafe() {
         if (this.nullSafe) {
             this.nullSafe = false;
@@ -533,7 +555,22 @@ public class ProvidedPacketBuffer implements PacketBuffer {
         }
         return object;
     }
-
+    /**
+     * See the general contract of the <code>readFully</code>
+     * method of <code>DataInput</code>.
+     * <p>
+     * Bytes
+     * for this operation are read from the contained
+     * input stream.
+     *
+     * @param      data   the buffer into which the data is read.
+     * @exception  EOFException  if this input stream reaches the end before
+     *             reading all the bytes.
+     * @exception  IOException   the stream has been closed and the contained
+     *             input stream does not support reading after close, or
+     *             another I/O error occurs.
+     * @see        java.io.FilterInputStream#in
+     */
     @SneakyThrows
     public void readFully(byte[] data) {
         this.dataInputStream.readFully(data);

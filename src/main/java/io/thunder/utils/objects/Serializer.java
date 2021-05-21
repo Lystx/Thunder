@@ -12,6 +12,9 @@ import java.io.ObjectOutputStream;
 @AllArgsConstructor
 public class Serializer<T> {
 
+    /**
+     * The object
+     */
     private final T object;
 
     /**

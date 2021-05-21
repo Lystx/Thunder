@@ -15,17 +15,43 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProvidedThunderSession implements ThunderSession {
 
-    private String sessionId; //The name
-    private UUID uniqueId; //the uuid
-    private List<ThunderSession> connectedSessions; //The sessions
-    private long startTime; //The time it started
-    private ThunderConnection connection; //The connection
+    /**
+     * The name of this session
+     */
+    private String sessionId;
 
+    /**
+     * The UUID of the session
+     */
+    private UUID uniqueId;
+
+    /**
+     * The sessions
+     */
+    private List<ThunderSession> connectedSessions;
+
+    /**
+     * The time it started
+     */
+    private long startTime;
+
+    /**
+     * The connection
+     */
+    private ThunderConnection connection;
+
+    /**
+     * The channel of this session
+     */
     @Setter
-    private ThunderChannel channel; //The channel of this session
+    private ThunderChannel channel;
 
+    /**
+     * If the session has handshaked the server
+     */
     @Setter
     private boolean handShaked;
+
     /**
      * Creates a new instance of the {@link ThunderSession}
      *

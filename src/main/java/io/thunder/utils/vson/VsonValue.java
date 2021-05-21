@@ -10,9 +10,12 @@ import io.thunder.utils.vson.enums.FileFormat;
 import io.thunder.utils.vson.enums.VsonType;
 import io.thunder.utils.vson.manage.WritingBuffer;
 import io.thunder.utils.vson.manage.json.JsonWriter;
+import io.thunder.utils.vson.manage.vson.VsonParser;
 import io.thunder.utils.vson.manage.vson.VsonWriter;
 import io.thunder.utils.vson.other.TempVsonOptions;
+import lombok.SneakyThrows;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -42,6 +45,11 @@ public abstract class VsonValue implements Serializable {
 
     public static VsonValue valueOf(boolean value) {
         return value ? VsonLiteral.TRUE : VsonLiteral.FALSE;
+    }
+
+    @SneakyThrows
+    public static String format(String s) {
+        return new VsonParser().parse(s).toString(FileFormat.JSON);
     }
 
 

@@ -37,7 +37,7 @@ public class ResponseTest {
             @Override
             public void accept(ThunderClient client) {
 
-                ResponseExamplePacket responseExamplePacket = new ResponseExamplePacket(20, 40);
+                ResponseExamplePacket responseExamplePacket = new ResponseExamplePacket(40, 40);
 
                 Response response = client.transferToResponse(responseExamplePacket); //Waiting for the response
                 System.out.println("[Math] " + responseExamplePacket.getA() + " + " + responseExamplePacket.getB() + " = " + response.get(0).asInt());

@@ -11,6 +11,12 @@ import java.util.zip.GZIPOutputStream;
 
 public class DefaultPacketCompressor implements PacketCompressor {
 
+    /**
+     * Compreses the {@link Packet} using {@link GZIPOutputStream}
+     * @param packet the packet to compress
+     * @return compressed Packet
+     * @throws Exception if something goes wrong
+     */
     @Override
     public Packet compress(Packet packet) throws Exception {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -30,6 +36,13 @@ public class DefaultPacketCompressor implements PacketCompressor {
         return newPacket;
     }
 
+    /**
+     * Decompresses the given {@link Packet} to another Packet
+     *
+     * @param packet the packet to decompress
+     * @return decompressed Packet
+     * @throws Exception if something goes wrong
+     */
     @Override
     public Packet decompress(Packet packet) throws Exception {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(packet.getData());

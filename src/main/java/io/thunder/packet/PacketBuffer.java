@@ -248,7 +248,17 @@ public interface PacketBuffer {
      */
     <T> T readObject();
 
+    /**
+     * Returns a raw Object with the type
+     *
+     * @param type the type (e.g. "String")
+     * @return object
+     */
     Object read(String type);
 
+    /**
+     * Fully reads this buffer with bytes
+     * @param data the data
+     */
     void readFully(byte[] data);
 }

@@ -16,6 +16,9 @@ import lombok.Setter;
 @Setter @Getter
 public class Logger {
 
+    /**
+     * The LogLevel
+     */
     private LogLevel logLevel = LogLevel.ERROR;
 
     public void log(LogLevel logLevel, String message) {

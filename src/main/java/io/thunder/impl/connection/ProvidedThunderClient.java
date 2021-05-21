@@ -390,15 +390,19 @@ public class ProvidedThunderClient implements ThunderClient, PacketHandler {
     @Override
     public void handle(Packet packet) {
         if (packet instanceof PacketHandshake) {
-            if (this.thunderListener != null) {
-
+            try {
                 PacketHandshake handshake = (PacketHandshake)packet;
+                packet.respond(ResponseStatus.SUCCESS, this.session.getSessionId(), this.session.getUniqueId(), this.session.getStartTime());
 
                 this.session.setHandShaked(true);
-
-                handshake.respond(ResponseStatus.SUCCESS, this.session.getSessionId(), this.session.getUniqueId(), this.session.getStartTime());
-
-                this.thunderListener.handleHandshake(handshake);
+                if (this.thunderListener != null) {
+                    this.thunderListener.handleHandshake(handshake);
+                }
+            } catch (Exception e) {
+                LOGGER.log(LogLevel.ERROR, "Couldn't respond to Handshake because of:");
+                if (LOGGER.getLogLevel().equals(LogLevel.ERROR)) {
+                    e.printStackTrace();
+                }
             }
         }
     }

@@ -28,10 +28,20 @@ import java.util.function.Consumer;
 public interface ThunderServer extends ThunderConnection {
 
 
+    /**
+     * Creates a new {@link ThunderServer}
+     *
+     * @return new instance of server
+     */
     static ThunderServer newInstance() {
         return ProvidedThunderServer.newInstance();
     }
 
+    /**
+     * Lists all connected {@link ThunderClient}s
+     *
+     * @return list of clients
+     */
     List<ThunderClient> getClients();
 
     /**

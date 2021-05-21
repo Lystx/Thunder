@@ -46,7 +46,6 @@ public abstract class Packet {
      */
     protected UUID uniqueId = UUID.randomUUID();
 
-
     /**
      * The protocolVersion of this Packet
      * Used for security to check for right packets
@@ -209,7 +208,11 @@ public abstract class Packet {
         return (InetSocketAddress) getChannel().remoteAddress();
     }
 
-
+    /**
+     * Creates a new {@link Packet}
+     *
+     * @return new packet instance
+     */
     public static Packet newInstance() {
         return new EmptyPacket();
     }
