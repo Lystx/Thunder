@@ -27,7 +27,6 @@ import java.util.function.Consumer;
  */
 public interface ThunderServer extends ThunderConnection {
 
-
     /**
      * Creates a new {@link ThunderServer}
      *

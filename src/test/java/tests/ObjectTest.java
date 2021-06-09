@@ -6,10 +6,14 @@ import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
 import io.thunder.packet.Packet;
 import io.thunder.packet.handler.PacketHandler;
+import io.thunder.packet.impl.PacketHandshake;
 import io.thunder.packet.impl.response.ResponseStatus;
 import io.thunder.utils.logger.LogLevel;
 import io.thunder.packet.impl.object.ObjectHandler;
+import io.thunder.utils.objects.Serializer;
+import io.thunder.utils.objects.ThunderTimer;
 import packets.ExampleObjectPacket;
+import utils.BaseObject;
 import utils.ExampleObject;
 
 import java.util.Arrays;
@@ -58,7 +62,7 @@ public class ObjectTest {
             @Override
             public void accept(ThunderClient client) {
                 client.sendPacket(new ExampleObjectPacket(new ExampleObject("Lystx", UUID.randomUUID(), System.currentTimeMillis(), Arrays.asList("a", "b", "c", "d", "e", "f"))), response -> System.out.println(response.getMessage()));
-                client.sendObject(new ExampleObject("Lystx", UUID.randomUUID(), System.currentTimeMillis(), Arrays.asList("a", "b", "c", "d", "e", "f")));
+               // client.sendObject(new ExampleObject("Lystx", UUID.randomUUID(), System.currentTimeMillis(), Arrays.asList("a", "b", "c", "d", "e", "f")));
             }
         });
     }

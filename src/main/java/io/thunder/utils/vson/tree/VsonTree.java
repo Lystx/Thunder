@@ -13,6 +13,7 @@ public interface VsonTree<T> {
     static <T> VsonTree<T> newTree(Class<T> tClass) {
         return newTree(null);
     }
+
     static <T> VsonTree<T> newTree(T object) {
         return Vson.get().createTree(object);
     }

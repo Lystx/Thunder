@@ -2,24 +2,20 @@ package packets;
 
 import io.thunder.packet.Packet;
 import io.thunder.packet.PacketBuffer;
+import io.thunder.packet.impl.EmptyPacket;
+import io.thunder.packet.impl.JsonPacket;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@Getter @AllArgsConstructor
-public class BasicExamplePacket extends Packet {
+@Getter
+public class BasicExamplePacket extends JsonPacket {
 
-    private String name;
-    private int age;
+    private final String name;
+    private final int age;
 
-    @Override
-    public void write(PacketBuffer buf) {
-        buf.writeString(name);
-        buf.writeInt(age);
+    public BasicExamplePacket(String name, int age) {
+        this.name = name;
+        this.age = age;
     }
 
-    @Override
-    public void read(PacketBuffer buf) {
-        name = buf.readString();
-        age = buf.readInt();
-    }
 }

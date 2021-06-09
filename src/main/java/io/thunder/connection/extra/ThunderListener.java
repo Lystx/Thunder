@@ -73,8 +73,9 @@ public interface ThunderListener {
         Packet decodedPacket;
         PacketBuffer packetBuffer = ProvidedPacketBuffer.newInstance(packet);
         String _class = packetBuffer.readString();
+        String data = packetBuffer.readString();
         try {
-            decodedPacket = thunderConnection.getDecoder().decode(packet, packetBuffer, thunderConnection, _class);
+            decodedPacket = thunderConnection.getDecoder().decode(packet, packetBuffer, thunderConnection, _class, data);
         } catch (Exception e) {
             Thunder.ERROR_HANDLER.onPacketFailure(packet, _class, e);
             return;

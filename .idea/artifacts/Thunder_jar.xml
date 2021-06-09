@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Thunder:jar">
+    <output-path>$USER_HOME$/Desktop</output-path>
+    <root id="archive" name="Thunder.jar">
+      <element id="module-output" name="Thunder" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.8.6/gson-2.8.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.16.10/lombok-1.16.10.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

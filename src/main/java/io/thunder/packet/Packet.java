@@ -12,8 +12,10 @@ import io.thunder.packet.impl.response.ResponseStatus;
 import io.thunder.utils.vson.elements.object.VsonObject;
 import io.thunder.utils.vson.enums.FileFormat;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.util.*;
 
@@ -24,8 +26,8 @@ import java.util.*;
  * You have to work with the {@link ProvidedPacketBuffer} to (de-)serialize your
  * objects in the packet
  */
-@Setter @Getter
-public abstract class Packet {
+@Setter @Getter @NoArgsConstructor
+public abstract class Packet implements Serializable {
 
     /**
      * The time this Packet took
@@ -74,6 +76,12 @@ public abstract class Packet {
      * Cancels to send the packet
      */
     private boolean cancelled = false;
+
+    /**
+     * If the packet should be send via
+     * a json-string and not be buffed
+     */
+    protected boolean json = false;
 
     /**
      * Will be called when the packet is received and fully

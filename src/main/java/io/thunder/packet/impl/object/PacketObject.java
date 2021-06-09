@@ -21,14 +21,14 @@ public class PacketObject<T extends Serializable> extends Packet {
 
     @Override
     public void write(PacketBuffer buf) {
-        buf.writeString(new Serializer<>(this.object).serialize());
+        buf.writeBytes(new Serializer<>(this.object).serialize());
         buf.writeLong(time);
     }
 
     @Override
     public void read(PacketBuffer buf) {
-        String s = buf.readString();
-        object = (T) new Serializer<>().deserialize(s);
+        byte[] b = buf.readBytes();
+        object = (T) new Serializer<>().deserialize(b);
         time = buf.readLong();
     }
 

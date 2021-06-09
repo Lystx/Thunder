@@ -26,6 +26,7 @@ import io.thunder.packet.handler.PacketAdapter;
 import io.thunder.packet.impl.object.ObjectHandler;
 import io.thunder.packet.impl.object.PacketObject;
 import io.thunder.utils.objects.ThunderAction;
+import io.thunder.utils.objects.ThunderOption;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -99,6 +100,10 @@ public class ProvidedThunderServer implements ThunderServer {
      */
     private final List<PacketCompressor> packetCompressors;
 
+    /**
+     * The options for this client
+     */
+    private final List<ThunderOption<?>> thunderOptions;
 
     private ProvidedThunderServer() {
 
@@ -106,10 +111,18 @@ public class ProvidedThunderServer implements ThunderServer {
         this.packetAdapter = new PacketAdapter();
         this.objectHandlers = new ArrayList<>();
         this.packetCompressors = new ArrayList<>();
+        this.thunderOptions = new ArrayList<>();
 
         this.session = ProvidedThunderSession.newInstance("[t:" + System.currentTimeMillis() + ", j: " + System.getProperty("java.version") + "]", UUID.randomUUID(), new LinkedList<>(), System.currentTimeMillis(), this,null, false);
         this.channel = ServerThunderChannel.newInstance(this);
 
+    }
+
+    @Override
+    public <T> ThunderConnection option(ThunderOption<T> option, T value) {
+        option.setValue(value);
+        this.thunderOptions.add(option);
+        return this;
     }
 
     public static ThunderServer newInstance() {
@@ -127,8 +140,7 @@ public class ProvidedThunderServer implements ThunderServer {
     }
 
     @Override @SneakyThrows
-    public synchronized void sendObject(Serializable object) {
-
+    public synchronized <T extends Serializable> void sendObject(T object) {
         this.sendPacket(new PacketObject<>(object, System.currentTimeMillis()));
     }
 
@@ -146,7 +158,6 @@ public class ProvidedThunderServer implements ThunderServer {
     public synchronized ThunderAction<ThunderServer> start(int port) {
         return ProvidedThunderAction.newInstance(thunderServer -> {
             LOGGER.log(LogLevel.DEBUG, "(Server-Side) Server starting...");
-
             try {
                 this.server = new ServerSocket(port);
                 this.session.setHandShaked(true);
@@ -185,9 +196,34 @@ public class ProvidedThunderServer implements ThunderServer {
 
                                                 session.getConnectedSessions().add(thunderSession);
                                             } catch (Exception e) {
-                                                LOGGER.log(LogLevel.ERROR, "Coulnd't get Respond of HandShakePacket from ThunderConnection!");
-                                                if (LOGGER.getLogLevel().equals(LogLevel.ERROR)) {
-                                                    e.printStackTrace();
+
+                                                try {
+
+
+                                                    ThunderOption<Boolean> thunderOption1 = getOption(0x00);
+
+                                                    if (thunderOption1.getValue()) {
+
+                                                        String sessionId = "ThunderSession#Ignored";
+                                                        UUID uuid = UUID.randomUUID();
+                                                        long time = System.currentTimeMillis();
+
+                                                        thunderSession.setSessionId(sessionId.split("ThunderSession#")[1]);
+                                                        thunderSession.setUniqueId(uuid);
+                                                        thunderSession.setStartTime(time);
+                                                        thunderSession.setHandShaked(false);
+
+                                                        session.getConnectedSessions().add(thunderSession);
+                                                    }
+                                                } catch (Exception ex) {
+                                                    LOGGER.log(LogLevel.ERROR, "Coulnd't get Respond of HandShakePacket from ThunderConnection!");
+                                                    if (LOGGER.getLogLevel().equals(LogLevel.ERROR)) {
+                                                        e.printStackTrace();
+                                                        if (ex != null) {
+                                                            System.out.println("-------------------");
+                                                            ex.printStackTrace();
+                                                        }
+                                                    }
                                                 }
                                             }
                                         });

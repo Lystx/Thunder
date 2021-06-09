@@ -11,4 +11,10 @@ import lombok.Getter;
 @Getter @AllArgsConstructor
 public class PacketHandshake extends EmptyPacket {
 
+    private final String name;
+
+
+    public PacketHandshake() {
+        this("<none>");
+    }
 }

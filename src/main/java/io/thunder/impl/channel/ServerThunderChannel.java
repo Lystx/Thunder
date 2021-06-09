@@ -16,6 +16,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.LinkedList;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ServerThunderChannel implements ThunderChannel {
@@ -57,7 +58,7 @@ public class ServerThunderChannel implements ThunderChannel {
         packet.setChannel(this.thunderServer.getChannel());
         packet.setConnection(this.thunderServer);
 
-        for (ThunderClient client : this.thunderServer.getClients()) {
+        for (ThunderClient client : new LinkedList<>(this.thunderServer.getClients())) {
             try {
 
                 ThunderConnection.processOut(

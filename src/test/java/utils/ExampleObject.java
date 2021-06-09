@@ -2,13 +2,14 @@ package utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-@AllArgsConstructor @Getter
+@AllArgsConstructor @Getter @ToString
 public class ExampleObject implements Serializable {
 
     private final String name;

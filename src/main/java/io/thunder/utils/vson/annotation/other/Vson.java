@@ -136,7 +136,6 @@ public class Vson {
 					}
 				}
 
-
 				object = (T) declaredConstructor.newInstance(args);
 			}
 

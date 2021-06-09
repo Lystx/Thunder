@@ -4,18 +4,15 @@ import com.sun.org.apache.xml.internal.security.utils.Base64;
 import io.thunder.Thunder;
 import lombok.AllArgsConstructor;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 
 @AllArgsConstructor
-public class Serializer<T> {
+public class Serializer<T extends Serializable> {
 
     /**
      * The object
      */
-    private final T object;
+    private T object;
 
     /**
      * Sets object to null
@@ -25,17 +22,26 @@ public class Serializer<T> {
     }
 
     /**
+     * Serializes an object
+     * @param object the object
+     * @return byte array
+     */
+    public byte[] serialize(T object) {
+        this.object = object;
+        return this.serialize();
+    }
+    /**
      * Serializes an Object into a String
      *
-     * @return object converted to String
+     * @return object converted to bytes
      */
-    public String serialize() {
+    public byte[] serialize() {
         try {
             ByteArrayOutputStream bo = new ByteArrayOutputStream();
             ObjectOutputStream so = new ObjectOutputStream(bo);
             so.writeObject(this.object);
             so.flush();
-            return Base64.encode(bo.toByteArray());
+            return bo.toByteArray();
         } catch (Exception e) {
             Thunder.ERROR_HANDLER.onError(e);
         }
@@ -48,12 +54,13 @@ public class Serializer<T> {
      * @param s the input
      * @return object
      */
-    public T deserialize(String s) {
+    public T deserialize(byte[] b) {
         try {
-            byte[] b = Base64.decode(s.getBytes());
             ByteArrayInputStream bi = new ByteArrayInputStream(b);
             ObjectInputStream si = new ObjectInputStream(bi);
-            return (T) si.readObject();
+
+            Object o = si.readObject();
+            return (T) o;
         } catch (Exception e) {
             Thunder.ERROR_HANDLER.onError(e);
         }

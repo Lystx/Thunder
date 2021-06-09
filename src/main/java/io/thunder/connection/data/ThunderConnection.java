@@ -1,5 +1,6 @@
 package io.thunder.connection.data;
 
+import com.sun.istack.internal.Nullable;
 import io.thunder.Thunder;
 import io.thunder.connection.codec.PacketCodec;
 import io.thunder.connection.codec.PacketDecoder;
@@ -19,6 +20,7 @@ import io.thunder.packet.impl.response.PacketRespond;
 import io.thunder.packet.impl.response.Response;
 import io.thunder.packet.impl.response.ResponseStatus;
 import io.thunder.utils.logger.LogLevel;
+import io.thunder.utils.objects.ThunderOption;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -61,7 +63,19 @@ public interface ThunderConnection {
      */
     void addCompressor(PacketCompressor compressor);
 
+    /**
+     * Adds an Option
+     * @param option the option
+     * @param value the value
+     * @return current connection
+     */
+    <T> ThunderConnection option(ThunderOption<T> option, T value);
 
+    /**
+     * Lists all {@link PacketCompressor}s
+     *
+     * @return list
+     */
     List<PacketCompressor> getPacketCompressors();
 
     /**
@@ -91,7 +105,7 @@ public interface ThunderConnection {
      *
      * @param object the objects
      */
-    void sendObject(Serializable object);
+    <T extends Serializable> void sendObject(T object);
 
     /**
      * Adds a {@link PacketHandler} by default
@@ -230,6 +244,23 @@ public interface ThunderConnection {
      */
     PacketDecoder getDecoder();
 
+    /**
+     * Lists all {@link ThunderOption}s
+     *
+     * @return list of options
+     */
+    List<ThunderOption<?>> getThunderOptions();
+
+    /**
+     * Gets a {@link ThunderOption} by its ID
+     *
+     * @param id the id
+     * @param <T> the generic Type
+     * @return option or null if not found
+     */
+    @Nullable default <T> ThunderOption<T> getOption(int id) {
+        return (ThunderOption<T>) getThunderOptions().stream().filter(thunderOption -> thunderOption.getId() == id).findFirst().orElse(null);
+    }
 
     /**
      * Checks if the Connection is still stable

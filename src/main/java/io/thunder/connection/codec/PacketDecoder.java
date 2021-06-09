@@ -17,5 +17,5 @@ public abstract class PacketDecoder extends PacketCodec {
      * @return decoded Packet
      * @throws Exception if something goes wrong
      */
-    public abstract Packet decode(Packet packet, PacketBuffer buf, ThunderConnection thunderConnection, String _class) throws Exception;
+    public abstract Packet decode(Packet packet, PacketBuffer buf, ThunderConnection thunderConnection, String _class, String data) throws Exception;
 }

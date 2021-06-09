@@ -1,11 +1,17 @@
 package io.thunder.impl.codec;
 
+import com.google.gson.Gson;
 import io.thunder.Thunder;
 import io.thunder.connection.codec.PacketDecoder;
 import io.thunder.connection.data.ThunderConnection;
 import io.thunder.packet.Packet;
 import io.thunder.packet.PacketBuffer;
 import io.thunder.utils.ThunderUtils;
+import io.thunder.utils.vson.annotation.other.Vson;
+import io.thunder.utils.vson.elements.object.VsonObject;
+import io.thunder.utils.vson.enums.FileFormat;
+import io.thunder.utils.vson.manage.vson.VsonParser;
+import io.thunder.utils.vson.tree.VsonTree;
 
 public class DefaultPacketDecoder extends PacketDecoder {
 
@@ -16,23 +22,32 @@ public class DefaultPacketDecoder extends PacketDecoder {
      * @param packet the packet to decode
      * @param buf the buf to work with
      * @param thunderConnection the connection it came from
-     * @param _class the name of the class
+     * @param clazz the name of the class
      * @return decoded Packet
      * @throws Exception if something goes wrong
      */
     @Override
-    public Packet decode(Packet packet, PacketBuffer buf, ThunderConnection thunderConnection, String clazz) throws Exception {
+    public Packet decode(Packet packet, PacketBuffer buf, ThunderConnection thunderConnection, String clazz, String data) throws Exception {
 
         try {
             Class<? extends Packet> _class = (Class<? extends Packet>) Class.forName(clazz);
-
-            Packet bufferedPacket = ThunderUtils.getInstance(_class);
+            Packet bufferedPacket = null;
+            if (data.equals("not_json")) {
+                bufferedPacket = ThunderUtils.getInstance(_class);
+            } else {
+                try {
+                    bufferedPacket = VsonTree.newTree(packet).from(new VsonObject(data), (Class<Packet>) _class);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
 
             if (bufferedPacket == null) {
-                bufferedPacket = Packet.newInstance();
+                bufferedPacket = packet;
             }
 
             //Setting values
+            bufferedPacket.setJson(packet.isJson());
             bufferedPacket.setProcessingTime(System.currentTimeMillis() - packet.getProcessingTime());
             bufferedPacket.setConnection(thunderConnection);
             bufferedPacket.setChannel(thunderConnection.getChannel());
@@ -41,7 +56,10 @@ public class DefaultPacketDecoder extends PacketDecoder {
             bufferedPacket.setProtocolVersion(packet.getProtocolVersion());
 
             //Reads the packet with the Reader
-            bufferedPacket.read(buf);
+
+            if (!bufferedPacket.isJson()) {
+                bufferedPacket.read(buf);
+            }
 
             return bufferedPacket;
         } catch (Exception e) {

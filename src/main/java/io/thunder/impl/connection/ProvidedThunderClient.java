@@ -5,6 +5,7 @@ import io.thunder.connection.codec.PacketCodec;
 import io.thunder.connection.codec.PacketDecoder;
 import io.thunder.connection.codec.PacketEncoder;
 import io.thunder.connection.codec.PacketPreDecoder;
+import io.thunder.connection.data.ThunderConnection;
 import io.thunder.connection.extra.PacketCompressor;
 import io.thunder.impl.codec.DefaultPacketDecoder;
 import io.thunder.impl.codec.DefaultPacketEncoder;
@@ -26,6 +27,7 @@ import io.thunder.packet.handler.PacketAdapter;
 import io.thunder.packet.impl.object.ObjectHandler;
 import io.thunder.packet.impl.object.PacketObject;
 import io.thunder.utils.objects.ThunderAction;
+import io.thunder.utils.objects.ThunderOption;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -102,12 +104,18 @@ public class ProvidedThunderClient implements ThunderClient, PacketHandler {
     private final List<PacketCompressor> packetCompressors;
 
     /**
+     * The options for this client
+     */
+    private final List<ThunderOption<?>> thunderOptions;
+
+    /**
      * Createing new {@link ThunderClient}
      */
     private ProvidedThunderClient() {
         this.packetAdapter = new PacketAdapter();
         this.objectHandlers = new ArrayList<>();
         this.packetCompressors = new ArrayList<>();
+        this.thunderOptions = new ArrayList<>();
 
         this.session = ProvidedThunderSession.newInstance("[t:" + System.currentTimeMillis() + ", j: " + System.getProperty("java.version") + "]", UUID.randomUUID(), new LinkedList<>(), System.currentTimeMillis(), this, null, false);
         this.channel = ClientThunderChannel.newInstance(this);
@@ -156,6 +164,14 @@ public class ProvidedThunderClient implements ThunderClient, PacketHandler {
     public synchronized void addCompressor(PacketCompressor compressor) {
         this.packetCompressors.add(compressor);
     }
+
+    @Override
+    public <T> ThunderConnection option(ThunderOption<T> option, T value) {
+        option.setValue(value);
+        this.thunderOptions.add(option);
+        return this;
+    }
+
     /**
      * Connects to the {@link io.thunder.connection.base.ThunderServer}
      *
@@ -166,7 +182,6 @@ public class ProvidedThunderClient implements ThunderClient, PacketHandler {
     @Override
     public synchronized ThunderAction<ThunderClient> connect(String host, int port) {
         return ProvidedThunderAction.newInstance(thunderClient -> {
-
             if (socket != null && !socket.isClosed()) {
                 throw new IllegalStateException("ThunderClient could not be opened because it's already connected!");
             }
