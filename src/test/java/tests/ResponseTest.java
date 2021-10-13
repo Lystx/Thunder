@@ -10,6 +10,7 @@ import io.thunder.packet.impl.response.Response;
 import io.thunder.packet.impl.response.ResponseStatus;
 import packets.ResponseExamplePacket;
 
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 public class ResponseTest {
@@ -17,6 +18,7 @@ public class ResponseTest {
     public static void main(String[] args) {
 
         Thunder.setLogging(LogLevel.ERROR);
+        AtomicLong time = new AtomicLong();
 
         //Creating Instances for Client & Server
         ThunderServer thunderServer = Thunder.createServer();
@@ -28,6 +30,7 @@ public class ResponseTest {
                 if (packet instanceof ResponseExamplePacket) {
                     ResponseExamplePacket responseExamplePacket = (ResponseExamplePacket)packet;
                     responseExamplePacket.respond(ResponseStatus.SUCCESS, (responseExamplePacket.getA() + responseExamplePacket.getB())); //Responding to the Packet
+                    time.set(System.currentTimeMillis());
                 }
             }
         });
@@ -40,7 +43,7 @@ public class ResponseTest {
                 ResponseExamplePacket responseExamplePacket = new ResponseExamplePacket(40, 40);
 
                 Response response = client.transferToResponse(responseExamplePacket); //Waiting for the response
-                System.out.println("[Math] " + responseExamplePacket.getA() + " + " + responseExamplePacket.getB() + " = " + response.get(0).asInt());
+                System.out.println("[Math] " + responseExamplePacket.getA() + " + " + responseExamplePacket.getB() + " = " + response.get(0).asInt() + "[" + (System.currentTimeMillis() - time.get()) + "ms]");
             }
         });
     }

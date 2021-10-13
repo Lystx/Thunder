@@ -297,7 +297,7 @@ public class ProvidedPacketBuffer implements PacketBuffer {
 
     /**
      * Constructs the current Reader from a
-     * given Packet and sets the {@link java.io.InputStream}
+     * given Packet and sets the {@link InputStream}
      *
      * @param packet the given Packet
      */
@@ -307,7 +307,7 @@ public class ProvidedPacketBuffer implements PacketBuffer {
 
     /**
      * Constructs the current Reader from a
-     * given Packet and sets the {@link java.io.InputStream}
+     * given Packet and sets the {@link InputStream}
      *
      * @param dataInputStream the given DataInputStream
      */
@@ -569,7 +569,7 @@ public class ProvidedPacketBuffer implements PacketBuffer {
      * @exception  IOException   the stream has been closed and the contained
      *             input stream does not support reading after close, or
      *             another I/O error occurs.
-     * @see        java.io.FilterInputStream#in
+     * @see        FilterInputStream#in
      */
     @SneakyThrows
     public void readFully(byte[] data) {
