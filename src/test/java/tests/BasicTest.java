@@ -14,6 +14,7 @@ import io.thunder.utils.objects.ThunderOption;
 import io.thunder.utils.objects.ThunderTimer;
 import packets.BasicExamplePacket;
 
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 public class BasicTest {
@@ -22,6 +23,7 @@ public class BasicTest {
     public static void main(String[] args) {
 
 
+        AtomicLong time = new AtomicLong();
         Thunder.setLogging(LogLevel.ERROR);
 
         //Creating Instances for Client & Server
@@ -33,7 +35,7 @@ public class BasicTest {
             public void handle(Packet packet) {
                 if (packet instanceof BasicExamplePacket) {
                     BasicExamplePacket basicExamplePacket = (BasicExamplePacket)packet;
-                    System.out.println("[--->] " + basicExamplePacket.getName() + ":" + basicExamplePacket.getAge() + " " + basicExamplePacket.getProcessingTime() + "ms");
+                    System.out.println("[--->] " + basicExamplePacket.getName() + ":" + basicExamplePacket.getAge() + " " + (System.currentTimeMillis() - time.get()) + "ms");
                 }
             }
         });
@@ -74,6 +76,7 @@ public class BasicTest {
             public void accept(ThunderClient client) {
                 BasicExamplePacket packet = new BasicExamplePacket("ExampleName", 32);
                 client.sendPacket(packet);
+                time.set(System.currentTimeMillis());
 
             }
         });

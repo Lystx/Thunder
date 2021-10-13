@@ -1,7 +1,7 @@
 package io.thunder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import eu.simplejson.helper.json.Json;
+import eu.simplejson.helper.json.JsonBuilder;
 import io.thunder.connection.base.ThunderClient;
 import io.thunder.connection.base.ThunderServer;
 import io.thunder.connection.extra.ThunderListener;
@@ -9,8 +9,6 @@ import io.thunder.packet.Packet;
 import io.thunder.connection.ErrorHandler;
 import io.thunder.utils.logger.LogLevel;
 import io.thunder.utils.logger.Logger;
-import io.thunder.utils.vson.annotation.other.Vson;
-import io.thunder.utils.vson.tree.VsonTree;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,6 +22,8 @@ import java.util.concurrent.Executors;
 public class Thunder {
 
     public static final Logger LOGGER = new Logger(); //Custom logger for Thunder
+    public static final Json JSON_INSTANCE = JsonBuilder.newBuilder().recommendedSettings().build();
+
     public static ErrorHandler ERROR_HANDLER = new ErrorHandler() {
         @Override
         public void onError(Exception e) {

@@ -1,12 +1,11 @@
 package io.thunder.impl.codec;
 
+import eu.simplejson.enums.JsonFormat;
 import io.thunder.Thunder;
 import io.thunder.connection.codec.PacketEncoder;
 import io.thunder.packet.PacketBuffer;
 import io.thunder.utils.logger.LogLevel;
 import io.thunder.packet.Packet;
-import io.thunder.utils.vson.annotation.other.Vson;
-import io.thunder.utils.vson.enums.FileFormat;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -24,7 +23,7 @@ public class DefaultPacketEncoder extends PacketEncoder {
     public void encode(Packet packet, DataOutputStream dataOutputStream, PacketBuffer buf) throws Exception {
 
         buf.writeString(packet.getClass().getName());
-        buf.writeString(packet.isJson() ? Vson.get().createTree(packet).toVson().toString(FileFormat.RAW_JSON) : "not_json");
+        buf.writeString(packet.isJson() ? Thunder.JSON_INSTANCE.toJson(packet).toString(JsonFormat.RAW) : "not_json");
         packet.write(buf);
 
         try {

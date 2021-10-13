@@ -1,6 +1,8 @@
 package io.thunder.packet;
 
 
+import eu.simplejson.elements.object.JsonObject;
+import eu.simplejson.enums.JsonFormat;
 import io.thunder.Thunder;
 import io.thunder.connection.data.ThunderConnection;
 import io.thunder.connection.data.ThunderChannel;
@@ -9,8 +11,6 @@ import io.thunder.packet.impl.EmptyPacket;
 import io.thunder.utils.logger.LogLevel;
 import io.thunder.packet.impl.response.PacketRespond;
 import io.thunder.packet.impl.response.ResponseStatus;
-import io.thunder.utils.vson.elements.object.VsonObject;
-import io.thunder.utils.vson.enums.FileFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -194,12 +194,12 @@ public abstract class Packet implements Serializable {
      */
     public void respond(ResponseStatus status, Object... object) {
 
-        VsonObject vsonObject = new VsonObject();
+        JsonObject jsonObject = new JsonObject();
         for (int i = 0; i < object.length; i++) {
-            vsonObject.append(String.valueOf(i), object[i]);
+            jsonObject.addProperty(String.valueOf(i), Thunder.JSON_INSTANCE.toJson(object[i]));
         }
 
-        this.respond(status, vsonObject.toString(FileFormat.RAW_JSON));
+        this.respond(status, jsonObject.toString(JsonFormat.RAW));
     }
 
     @Override

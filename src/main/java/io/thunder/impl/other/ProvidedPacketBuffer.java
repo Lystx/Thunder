@@ -2,14 +2,13 @@
 
 package io.thunder.impl.other;
 
+import eu.simplejson.JsonEntity;
+import eu.simplejson.enums.JsonFormat;
+import io.thunder.Thunder;
 import io.thunder.packet.Packet;
 import io.thunder.packet.PacketBuffer;
 import io.thunder.utils.objects.ThunderObject;
 import io.thunder.utils.ThunderUtils;
-import io.thunder.utils.vson.VsonValue;
-import io.thunder.utils.vson.annotation.other.Vson;
-import io.thunder.utils.vson.enums.FileFormat;
-import io.thunder.utils.vson.manage.vson.VsonParser;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -255,8 +254,8 @@ public class ProvidedPacketBuffer implements PacketBuffer {
     public synchronized void writeObject(Object object) {
         if (!this.checkNullSafe(object)) {
             this.writeString(object.getClass().getName());
-            VsonValue parse = Vson.get().parse(object);
-            this.writeString(parse.toString(FileFormat.RAW_JSON));
+            JsonEntity entity = Thunder.JSON_INSTANCE.toJson(object);
+            this.writeString(entity.toString(JsonFormat.RAW));
         }
     }
 
@@ -525,7 +524,7 @@ public class ProvidedPacketBuffer implements PacketBuffer {
             return null;
         }
         String objectClass = this.readString();
-        return Vson.get().unparse(new VsonParser(this.readString()).parse(), (Class<T>) Class.forName(objectClass));
+        return (T) Thunder.JSON_INSTANCE.fromJson(this.readString(), Class.forName(objectClass));
     }
 
     public synchronized Object read(String type) {

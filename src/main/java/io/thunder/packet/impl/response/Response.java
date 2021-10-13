@@ -1,7 +1,8 @@
 package io.thunder.packet.impl.response;
 
-import io.thunder.utils.vson.elements.object.VsonObject;
-import io.thunder.utils.vson.enums.FileFormat;
+import eu.simplejson.elements.object.JsonObject;
+import eu.simplejson.enums.JsonFormat;
+import io.thunder.Thunder;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -139,7 +140,7 @@ public class Response {
      */
     @SneakyThrows
     public <T> List<T> asList(Class<T> tClass) {
-        return new VsonObject(this.message).getList(String.valueOf(this.pos), tClass);
+        return new JsonObject(this.message).get(String.valueOf(this.pos)).asCustom(List.class, Thunder.JSON_INSTANCE);
     }
 
     /**
@@ -151,23 +152,24 @@ public class Response {
      */
     @SneakyThrows
     public <T> T asCustom(Class<T> tClass) {
-        return new VsonObject(this.message).getObject(String.valueOf(this.pos), tClass);
+        return new JsonObject(this.message).get(String.valueOf(this.pos)).asCustom(tClass, Thunder.JSON_INSTANCE);
     }
 
     /**
      * Returns this Response's data transformed
-     * into a {@link VsonObject} and then parsed into a String
+     * into a {@link JsonObject} and then parsed into a String
      *
      * @return data as String
      */
     public String toString() {
-        VsonObject vsonObject = new VsonObject();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.setFormat(JsonFormat.FORMATTED);
 
-        vsonObject.append("status", this.status);
-        vsonObject.append("message", this.message);
-        vsonObject.append("packet", respondPacket);
+        jsonObject.addProperty("status", this.status.name());
+        jsonObject.addProperty("message", this.message);
+        jsonObject.addProperty("packet", Thunder.JSON_INSTANCE.toJson(respondPacket));
 
-        return vsonObject.toString(FileFormat.JSON);
+        return jsonObject.toString();
     }
 
 
